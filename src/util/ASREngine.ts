@@ -54,9 +54,9 @@ export class ASREngine extends TypedEventTarget<ASREngine, {
           this.recognition?.start();
         }
       } else{
-        this.dispatchCustomEvent("finished");
-        this.recognizing = false;
         console.log("音声認識が終了しました.")
+        this.recognizing = false;
+        this.dispatchCustomEvent("finished");
       }
     };
   }
