@@ -65,14 +65,14 @@ export function VideoMeeting({model, skyWay, userMediaSM, vitrualBgSM, screenSha
         </HorizontalPanel>
         {/* media controls */}
         <div>
-            <Tooltip title="カメラ">
-                <FormControlLabel label={<VideoCameraFrontIcon sx={{ color: cameraOn? pink[500] : "black" }} />} control={
-                    <IOSSwitch sx={{ m: 1 }} checked={cameraOn} onChange={onCameraChange} />
-                }/>
-            </Tooltip>
             <Tooltip title="マイク">
                 <FormControlLabel label={<MicIcon sx={{ color: micOn? pink[500] : "black" }}/>} control={
                     <IOSSwitch sx={{ m: 1 }} checked={micOn} onChange={onMicChange} />
+                }/>
+            </Tooltip>
+            <Tooltip title="カメラ">
+                <FormControlLabel label={<VideoCameraFrontIcon sx={{ color: cameraOn? pink[500] : "black" }} />} control={
+                    <IOSSwitch sx={{ m: 1 }} checked={cameraOn} onChange={onCameraChange} />
                 }/>
             </Tooltip>
             <Tooltip title="画面共有">
