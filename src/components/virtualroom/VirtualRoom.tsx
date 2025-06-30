@@ -53,7 +53,9 @@ export function VirtualRoom({vrm, vrom, onSelfNameChange}: Props){
                 <Button type="submit" variant="contained">変更</Button>
             </form>
         </div>
-        <svg style={{width: "512px", height: "512px", backgroundImage: `url(${vrm.background})`}}>
+        <svg style={{width: "512px", height: "512px",
+            backgroundImage: `url(${vrm.background})`,
+            backgroundSize: "contain", backgroundPosition: "center"}}>
             {/* self */}
             {<SelfAvatar avatar={vrom.selfPeer} />}
             {/* peers */}

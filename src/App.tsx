@@ -64,7 +64,7 @@ export default function App(){
     const vrom = useSharedModel(app.madoi, ()=>
         new VirtualRoomOwnModel(roomId, selfName, [Math.random() * 300, Math.random() * 300]));
     const vrm = useSharedModel(app.madoi, ()=>
-        new VirtualRoomModel(roomId, "defaultBackground.png"));
+        new VirtualRoomModel(roomId, "defaultFloor_sd35.png"));
     const onVirtualRoomSelfNameChange = (name: string)=>{
         setSelfName(name);
         app.storage.set("name", name);
