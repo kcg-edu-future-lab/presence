@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { DrawingCanvas } from "./model/DrawingCanvas";
-import { Button, Input, TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 
 interface Props{
     canvas: DrawingCanvas;
@@ -23,8 +23,9 @@ export function Whiteboard({canvas: dc}: Props){
 
     return <>
         <div>
-            Size:  <input ref={sizeInput} type="number" defaultValue={2} min={1} max={10} step={1} required></input>
-            Color: <input ref={colorInput} type="color"></input>
+            <TextField inputRef={sizeInput} type="number" label="Size" size="small" slotProps={{
+                htmlInput: {min: 1, max: 10, step: 1}}} defaultValue={2}></TextField>
+            <TextField inputRef={colorInput} type="color" label="Color" size="small" sx={{ width: '4em' }}></TextField>
             &nbsp; &nbsp;
             <Button size="small" variant="contained" color="error" onClick={onClearClick}>Clear</Button>
         </div>
