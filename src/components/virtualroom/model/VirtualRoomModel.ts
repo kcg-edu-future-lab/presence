@@ -14,7 +14,7 @@ export class VirtualRoomModel extends TypedEventTarget<VirtualRoomModel, {
     constructor(roomId: string, defaultBackground: string){
         super();
         this.ls = new LocalJsonStorage(roomId);
-        this._background = this.ls.get("background", defaultBackground);
+        this._background = defaultBackground;
     }
 
     get background(){
