@@ -1,10 +1,15 @@
 import { GetState, SetState, Share, ShareClass } from "madoi-client";
 
-interface Drawing{
-    prevX: number, prevY: number,
-    x: number, y: number,
-    size: number, color: string
+interface Line{
+    type: "line";
+    sx: number; sy: number;
+    tx: number; ty: number;
+    size: number; color: string;
 }
+interface Clear{
+    type: "clear";
+}
+type Drawing = Line | Clear;
 
 @ShareClass({className: "DrawingCanvas"})
 export class DrawingCanvas{
@@ -58,13 +63,12 @@ export class DrawingCanvas{
     constructor(width: number = 640, height: number = 480){
         this.canvas = this.newCanvas(width, height);
         this.ctx = this.canvas.getContext("2d");
-        if(this.ctx){
-            this.ctx.fillStyle = "rgb(255, 255, 255)";
-            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-            this.ctx.fillStyle = "rgb(0, 0, 0)";
-            this.ctx.font = "60px 'ＭＳ Ｐゴシック'";
-            this.ctx.fillText("ボード", 10, 70);
-        }
+        if(this.ctx === null) return;
+        this.ctx.fillStyle = "rgb(255, 255, 255)";
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = "rgb(0, 0, 0)";
+        this.ctx.font = "60px 'ＭＳ Ｐゴシック'";
+        this.ctx.fillText("ボード", 10, 70);
     }
 
     private canvasMouseDownListener = (e: MouseEvent)=>this.canvasMouseDown(e);
@@ -103,20 +107,19 @@ export class DrawingCanvas{
 
     @Share({maxLog: 100})
     draw(prevX: number, prevY: number, x: number, y: number, size: number, color: string) {
-        if(this.loading){
-            // 画像がロード中の場合は描画を後回しにする
-            this.pendingDrawings.push({
-                prevX: prevX, prevY: prevY,
-                x: x, y: y, size: size, color: color
-            });
-        } else if(this.ctx){
-            this.ctx.beginPath();
-            this.ctx.strokeStyle = color;
-            this.ctx.lineWidth = size;
-            this.ctx.moveTo(prevX, prevY);
-            this.ctx.lineTo(x, y);
-            this.ctx.stroke();
-        }
+        this.pendingDrawings.push({
+            type: "line",
+            sx: prevX, sy: prevY,
+            tx: x, ty: y,
+            size, color
+        });
+        this.processPendingDrawings();
+    }
+
+    @Share()
+    clear(){
+        this.pendingDrawings.push({type: "clear"});
+        this.processPendingDrawings();
     }
   
     @GetState({maxInterval: 10000, maxUpdates: 100})
@@ -131,17 +134,41 @@ export class DrawingCanvas{
         img.onload = () => {
             if(this.ctx === null) return;
             this.ctx.drawImage(img, 0, 0);
-            for(const p of this.pendingDrawings){
-                this.ctx.beginPath();
-                this.ctx.strokeStyle = p.color;
-                this.ctx.lineWidth = p.size;
-                this.ctx.moveTo(p.prevX, p.prevY);
-                this.ctx.lineTo(p.x, p.y);
-                this.ctx.stroke();
-            }
-            this.pendingDrawings = new Array();
+            this.processPendingDrawings();
             this.loading = false;
         };
         img.src = state;
+    }
+
+    async getAsArrayBuffer(): Promise<ArrayBuffer> {
+        return new Promise((resolve, reject) => {
+            this.canvas.toBlob(blob=>{
+                if(blob === null) return;
+                const reader = new FileReader();
+                reader.readAsArrayBuffer(blob);
+                reader.onload = ()=>{
+                    resolve(reader.result as ArrayBuffer);
+                };
+            });
+        });
+    }
+
+    private processPendingDrawings(){
+        if(this.loading || this.ctx === null) return;
+        const ctx = this.ctx;
+        for(const p of this.pendingDrawings){
+            if(p.type === "line"){
+                ctx.beginPath();
+                ctx.strokeStyle = p.color;
+                ctx.lineWidth = p.size;
+                ctx.moveTo(p.sx, p.sy);
+                ctx.lineTo(p.tx, p.ty);
+                ctx.stroke();
+            } else if(p.type === "clear"){
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        this.pendingDrawings = new Array();
     }
 }
