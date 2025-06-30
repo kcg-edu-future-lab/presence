@@ -30,7 +30,7 @@ export class VirtualRoomOwnModel extends TypedEventTarget<VirtualRoomOwnModel, {
     }
 
     get otherPeers(){
-        return this.others.values().toArray();
+        return Array.from(this.others.values());
     }
 
     @BeforeEnterRoom()
