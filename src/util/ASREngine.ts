@@ -23,6 +23,7 @@ export class ASREngine extends TypedEventTarget<ASREngine, {
     const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     const rec = new SpeechRecognition();
     this.recognition = rec;
+    this.lastSize = 0;
     rec.lang = language;
     rec.continuous = true;
     rec.onresult = e => {
@@ -43,7 +44,7 @@ export class ASREngine extends TypedEventTarget<ASREngine, {
       console.info(`音声認識でエラーが発生しました: ${e.error}`);
       this.errorCode = e.error;
     };
-    this.recognition.onend = (e: Event) => {
+    rec.onend = (e: Event) => {
       if(this.recognizing && this.keepEnabled &&
           (this.errorCode === null ||
             ["abort", "network", "no-speech"].includes(this.errorCode)) &&
@@ -52,6 +53,7 @@ export class ASREngine extends TypedEventTarget<ASREngine, {
         if(rest > 0){
           console.log(`音声認識を再起動します(残り${Math.floor(rest / 1000)}秒).`);
           this.recognition?.start();
+          this.lastSize = 0;
         }
       } else{
         console.log("音声認識が終了しました.")
