@@ -1,9 +1,9 @@
-# Madoi設定
+// Madoi設定
 export const madoiUrl = "wss://your.domain.example.com/madoi-server/rooms";
 export const madoiKey = "MADOI_API_KEY";
 
-# SkyWay設定
-# ビデオ会議を使用する際は、skyWayEnabledにtrueを設定してskyWayAppIdとskyWaySecretを書き換えてください。
+// SkyWay設定
+// ビデオ会議を使用する際は、skyWayEnabledにtrueを設定してskyWayAppIdとskyWaySecretを書き換えてください。
 export const skyWayEnabled = false;
 export const skyWayAppId = "SKYWAY_APP_ID";
 export const skyWaySecret = "SKYWAY_SECRET";
