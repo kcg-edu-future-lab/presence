@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { StreamCreatedListener, StreamManager, StreamUpdatedListener } from "../../util/StreamManagers";
+import { StreamCreatedListener, StreamManager, StreamUpdatedListener } from "../../util/media/StreamManagers";
 import { MadoiIdChangedListener, NameChangedListener, SelfPeerModel, SkyWayIdChangedListener } from "./model/SelfPeerModel";
 import { bundleCleanups, eventListnersEffect } from "madoi-client-react";
 

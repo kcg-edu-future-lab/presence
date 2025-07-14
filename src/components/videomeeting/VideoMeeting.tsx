@@ -1,10 +1,11 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { HorizontalPanel } from "./HorizontalPanel";
 import { SkyWay } from "../../util/SkyWay";
-import { StreamCreatedListener, StreamUpdatedListener, TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from "../../util/StreamManagers";
+import { StreamCreatedListener, StreamUpdatedListener, TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from "../../util/media/StreamManagers";
 import { VideoMeetingOwnModel } from "./model/VideoMeetingOwnModel";
 import { SelfVideo } from "./SelfVideo";
 import { OtherVideo } from "./OtherVideo";
+import { MediaManager } from "../../util/media/MediaManager";
 import { FormControlLabel, Tooltip } from "@mui/material";
 import { IOSSwitch } from "../../util/MUI";
 import { pink } from "@mui/material/colors";
@@ -13,54 +14,47 @@ import VideoCameraFrontIcon from '@mui/icons-material/VideoCameraFront';
 import ScreenShareIcon from '@mui/icons-material/ScreenShare';
 
 interface Props{
-    skyWay: SkyWay;
-    userMediaSM: UserMediaStreamManager;
-    vitrualBgSM: VirtualBackgroundStreamManager;
-    screenShareSM: TakingplaceScreenStreamManager;
     model: VideoMeetingOwnModel;
+    skyWay?: SkyWay;
+    mediaManager: MediaManager | null;
 }
-export function VideoMeeting({model, skyWay, userMediaSM, vitrualBgSM, screenShareSM}: Props){
+export function VideoMeeting({model, skyWay, mediaManager}: Props){
     const first = useRef(true);
     const [cameraOn, setCameraOn] = useState(false);
     const [micOn, setMicOn] = useState(false);
     const [screenShareOn, setScreenShareOn] = useState(false);
 
     const onUserStreamCreated: StreamCreatedListener = ({detail: {stream}})=>{
-        skyWay.start(stream);
+        skyWay?.start(stream);
     };
     const onUserStreamUpdated: StreamUpdatedListener = ({detail: {stream}})=>{
-        skyWay.replaceVideoStream(stream.getVideoTracks());
+        skyWay?.replaceVideoStream(stream.getVideoTracks());
     };
     const onCameraChange = (e: FormEvent<HTMLInputElement>)=>{
         const enabled = e.currentTarget.checked;
         setCameraOn(enabled);
-        userMediaSM.setCameraState(enabled);
+        mediaManager?.setCameraEnabled(enabled);
     };
     const onMicChange = (e: FormEvent<HTMLInputElement>)=>{
         const enabled = e.currentTarget.checked;
         setMicOn(enabled);
-        userMediaSM.setMicState(enabled)
+        mediaManager?.setMicEnabled(enabled)
     };
     const onScreenShareChange = async (e: FormEvent<HTMLInputElement>)=>{
         const enabled = e.currentTarget.checked;
-        await screenShareSM.setEnabled(enabled);
-        setScreenShareOn(screenShareSM.enabled);
+        await mediaManager?.setScreenShareEnabled(enabled);
+        setScreenShareOn(mediaManager?.isScreenShareEnabled() || false);
     };
 
     useEffect(()=>{
         if(!first.current) return;
         first.current = false;
-        vitrualBgSM.attach(userMediaSM);
-        screenShareSM.attach(vitrualBgSM);
-        screenShareSM.addEventListener("streamCreated", onUserStreamCreated);
-        screenShareSM.addEventListener("streamUpdated", onUserStreamUpdated);
-        screenShareSM.onScreenShareStopped = ()=>setScreenShareOn(false);
-        userMediaSM.acquire();
+        mediaManager?.start(onUserStreamCreated, onUserStreamUpdated, ()=>setScreenShareOn(false));
     });
 
-    return <div>
+    return skyWay && mediaManager && model.selfPeer ? <div>
         <HorizontalPanel>
-            <SelfVideo model={model.selfPeer} sm={screenShareSM} />
+            <SelfVideo model={model.selfPeer} sm={mediaManager.getScreenShareSM()} />
             {model.otherPeers.map(p=><OtherVideo key={p.madoiId} model={p} />)}
         </HorizontalPanel>
         {/* media controls */}
@@ -81,5 +75,5 @@ export function VideoMeeting({model, skyWay, userMediaSM, vitrualBgSM, screenSha
                 }/>
             </Tooltip>
         </div>
-    </div>;
+    </div> : <></>;
 }

@@ -5,7 +5,6 @@ import { Grid } from '@mui/material';
 import { Madoi } from 'madoi-client';
 import { useSharedModel } from 'madoi-client-react';
 import vbImagePath from './defaultBackground.png';
-import { TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from './util/StreamManagers';
 import { SkyWay } from './util/SkyWay';
 import { getLastPath } from './util/Util';
 import { LocalJsonStorage } from './util/LocalJsonStorage';
@@ -24,25 +23,22 @@ import { TagBoard } from './components/tagboard/TagBoard';
 import { TagBoardModel } from './components/tagboard/model/TagBoardModel';
 import { ClickListener } from './components/common/model/ClickableText';
 import { ReactionButtons } from './components/reaction/ReactionButtons';
-import { madoiUrl, madoiKey, skyWayAppId, skyWaySecret } from './keys';
+import { madoiUrl, madoiKey, skyWayEnabled, skyWayAppId, skyWaySecret } from './keys';
+import { MediaManager } from './util/media/MediaManager';
 
-const roomId: string = `sample-madoi-vroom-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
-const prefix = `presence-${roomId}`;
-const ls = new LocalJsonStorage<{id: string, name: string}>(prefix);
+const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
+const ls = new LocalJsonStorage<{id: string, name: string}>(roomId);
 export const AppContext = createContext({
     storage: ls, 
     madoi: new Madoi(
-//        `ws://localhost:8080/madoi/rooms/${roomId}`,
         `${madoiUrl}/${roomId}`,
         madoiKey, {
             id: ls.get("id", ()=>uuidv4()),
             profile: {name: ls.get("name", "匿名")}
         }),
     asr: new ASREngine(),
-    userMediaSM: new UserMediaStreamManager(),
-    virtualBGSM: new VirtualBackgroundStreamManager(vbImagePath),
-    screenShareSM: new TakingplaceScreenStreamManager(),
-    skyWay: new SkyWay(skyWayAppId, skyWaySecret, roomId)
+    mediaManager: skyWayEnabled ? new MediaManager(vbImagePath) : null,
+    skyWay: skyWayEnabled ? new SkyWay(skyWayAppId, skyWaySecret, roomId) : undefined
 });
 
 export default function App(){
@@ -53,9 +49,7 @@ export default function App(){
     const [selfName, setSelfName] = useState(()=>madoi.getSelfPeerProfile()["name"]);
 
     // VideoMeeting
-    const userMediaStreamManager = app.userMediaSM;
-    const virtualBgStreamManager = app.virtualBGSM;
-    const screenShareStreamManager = app.screenShareSM;
+    const mediaManager = app.mediaManager;
     const skyWay = app.skyWay;
     const vmModel = useSharedModel(app.madoi, ()=>
         new VideoMeetingOwnModel(skyWay));
@@ -98,11 +92,7 @@ export default function App(){
 
     return <Grid container>
         <Grid size={12}>
-            <VideoMeeting {...{model: vmModel, skyWay,
-                userMediaSM: userMediaStreamManager,
-                vitrualBgSM: virtualBgStreamManager,
-                screenShareSM: screenShareStreamManager}}
-            />
+            <VideoMeeting {...{model: vmModel, mediaManager, skyWay}} />
         </Grid>
         <Grid size={6}>
             <VirtualRoom {...{vrm, vrom, selfName, onSelfNameChange: onVirtualRoomSelfNameChange}} />
@@ -119,14 +109,14 @@ export default function App(){
     </Grid>;
 }
 
-async function init(skyWay: SkyWay, vrom: VirtualRoomOwnModel){
-    skyWay.addEventListener("connected", ({detail: {selfPeerId}})=>{
+async function init(skyWay: SkyWay | undefined, vrom: VirtualRoomOwnModel){
+    skyWay?.addEventListener("connected", ({detail: {selfPeerId}})=>{
         console.log(`[App] SkyWayに接続しました。IDは${selfPeerId}です。`);
     });
-    skyWay.addEventListener("peerStreamArrived", ({detail: {peerId}})=>{
+    skyWay?.addEventListener("peerStreamArrived", ({detail: {peerId}})=>{
         console.log(`[App] ${peerId} がSkyWayで接続しました。`);
     });
-    skyWay.addEventListener("peerLeaved", ({detail: {peerId}})=>{
+    skyWay?.addEventListener("peerLeaved", ({detail: {peerId}})=>{
         console.log(`[App] ${peerId} がSkyWayから切断しました。`);
     });
 

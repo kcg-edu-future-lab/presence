@@ -16,20 +16,22 @@ export class VideoMeetingOwnModel
 extends TypedEventTarget<VideoMeetingOwnModel, {connected: ConnectedDetail}>{
     private madoi?: Madoi;
     private unattachedSkyWayPeerStreams: PeerStream[] = [];
-    private _self: SelfPeerModel;
+    private _self?: SelfPeerModel;
     private _others: OtherPeerModel[] = [];
 
-    constructor(skyWay: SkyWay){
+    constructor(skyWay?: SkyWay){
         super();
-        this._self = new SelfPeerModel(skyWay);
-        skyWay.addEventListener("connected", ({detail: {selfPeerId}})=>{
-            if(this.madoi){
-                this.madoi.updateSelfPeerProfile("skyWayPeerId", selfPeerId);
-            }
-            this.dispatchCustomEvent("connected", {skyWayPeerId: selfPeerId});
-        });
-        skyWay.addEventListener("peerStreamArrived", ({detail: {peerId, track, type}})=>
-            this.peerStreamTrackArrived(peerId, track, type));
+        if(skyWay){
+            this._self = new SelfPeerModel(skyWay);
+            skyWay.addEventListener("connected", ({detail: {selfPeerId}})=>{
+                if(this.madoi){
+                    this.madoi.updateSelfPeerProfile("skyWayPeerId", selfPeerId);
+                }
+                this.dispatchCustomEvent("connected", {skyWayPeerId: selfPeerId});
+            });
+            skyWay.addEventListener("peerStreamArrived", ({detail: {peerId, track, type}})=>
+                this.peerStreamTrackArrived(peerId, track, type));
+        }
     }
 
     get selfPeer(){
@@ -46,12 +48,13 @@ extends TypedEventTarget<VideoMeetingOwnModel, {connected: ConnectedDetail}>{
 
     @BeforeEnterRoom()
     protected beforeEnterRoom(selfPeerProfile: {[key: string]: any}, madoi: Madoi){
-        if(this._self.skyWayId) selfPeerProfile["skyWayPeerId"] = this._self.skyWayId;
+        if(this._self?.skyWayId) selfPeerProfile["skyWayPeerId"] = this._self.skyWayId;
         this.madoi = madoi;
     }
 
     @EnterRoomAllowed()
     protected enterRoomAllowed({selfPeer, otherPeers}: EnterRoomAllowedDetail){
+        if(!this._self) return;
         this._self.madoiId = selfPeer.id;
         this._self.name = selfPeer.profile["name"];
         this._others = otherPeers.map(p=>{
