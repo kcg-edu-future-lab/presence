@@ -10,8 +10,8 @@ interface Props{
     chatLogs: ChatLogs;
 }
 export function ASRChat({selfName, asr, chatLogs}: Props){
-    const onChat = (sentence: string, language: string)=>{
-        chatLogs.add(selfName, language, sentence);
+    const onChat = (sentence: string)=>{
+        chatLogs.add(selfName, "ja", sentence);
     }
     const onAsrResults: ASRResultListener = ({detail: {results}}) =>{
         const message = results.join("\n");
