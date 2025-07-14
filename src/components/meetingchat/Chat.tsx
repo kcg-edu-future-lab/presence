@@ -4,17 +4,16 @@ import { ChatLogs } from "./model/ChatLogs";
 
 interface Props {
   logs: ChatLogs;
-  onChat: (sentence: string, language: string)=>void;
+  onChat: (sentence: string)=>void;
 }
 export function Chat({logs, onChat}: Props){
   const sentenceInputRef = useRef<HTMLInputElement>(null!);
-  const langInputRef = useRef<HTMLInputElement>(null!);
   const chatLogDivRef = useRef<HTMLDivElement>(null!);
   const onSubmit: FormEventHandler = e=>{
     e.preventDefault();
     const sentence = sentenceInputRef.current.value.trim();
     if(sentence.length == 0) return;
-    onChat(sentenceInputRef.current.value, langInputRef.current.value);
+    onChat(sentenceInputRef.current.value);
     sentenceInputRef.current.value = "";
   };
   useEffect(()=>{
