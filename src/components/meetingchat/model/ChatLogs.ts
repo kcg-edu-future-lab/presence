@@ -28,7 +28,7 @@ export class ChatLogs extends TypedEventTarget<ChatLogs, {
         this.addLog(senderName, language, message);
     }
 
-    @Share({maxLog: 1000})
+    @Share()
     private addLog(senderName: string, language: string, sentence: string){
         this.logs = [...this.logs, {senderName, language, sentence}];
         this.dispatchCustomEvent("logAdded", {sentence});

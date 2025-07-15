@@ -105,7 +105,7 @@ export class DrawingCanvas{
         this.canvas = c;
     }
 
-    @Share({maxLog: 100})
+    @Share()
     draw(prevX: number, prevY: number, x: number, y: number, size: number, color: string) {
         this.pendingDrawings.push({
             type: "line",
