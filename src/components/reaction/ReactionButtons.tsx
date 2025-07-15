@@ -1,6 +1,5 @@
-import { useRef } from 'react';
-import { ClickListener } from '../common/model/ClickableText';
 import { Madoi } from 'madoi-client';
+import { ClickListener } from '../common/model/ClickableText';
 import { TextButton } from './TextButton';
 import { AudioTextButton } from './AudioTextButton';
 import "./ReactionButtons.css";
@@ -59,4 +58,3 @@ export function ReactionButtons({madoi, onTextClick}: Props){
         <TextButton madoi={madoi} onClick={onTextClick}>🤮</TextButton>
     </>;
 }
-
