@@ -24,22 +24,21 @@ interface Props{
     onTextClick?: ClickListener;
 }
 export function ReactionButtons({madoi, onTextClick}: Props){
-    const audioRef = useRef<HTMLAudioElement>(null);
     return <>
-        <AudioTextButton madoi={madoi} src={se1} volume={0.7}>🍺</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se2} volume={0.7}>👏</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se3} volume={0.7}>👏😄</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se4} volume={0.7}>🥁</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se5} volume={0.7}>🎉</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se6} volume={0.7}>🤪</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se7} volume={0.7}>👍</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se8} volume={0.7}>💰</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se9} volume={0.7}>😨</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se10} volume={0.7}>🔔</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se11} volume={0.7}>🦵💦</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se12} volume={0.7}>🙏</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se13} volume={0.7}>ポク・ポク・ポク</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se14} volume={0.7}>チーン</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se1} volume={0.7} onClick={onTextClick}>🍺</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se2} volume={0.7} onClick={onTextClick}>👏</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se3} volume={0.7} onClick={onTextClick}>👏😄</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se4} volume={0.7} onClick={onTextClick}>🥁</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se5} volume={0.7} onClick={onTextClick}>🎉</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se6} volume={0.7} onClick={onTextClick}>🤪</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se7} volume={0.7} onClick={onTextClick}>👍</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se8} volume={0.7} onClick={onTextClick}>💰</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se9} volume={0.7} onClick={onTextClick}>😨</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se10} volume={0.7} onClick={onTextClick}>🔔</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se11} volume={0.7} onClick={onTextClick}>🦵💦</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se12} volume={0.7} onClick={onTextClick}>🙏</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se13} volume={0.7} onClick={onTextClick}>ポク・ポク・ポク</AudioTextButton>
+        <AudioTextButton madoi={madoi} src={se14} volume={0.7} onClick={onTextClick}>チーン</AudioTextButton>
         <br/>
         <TextButton madoi={madoi} onClick={onTextClick}>🙂</TextButton>
         <TextButton madoi={madoi} onClick={onTextClick}>👏</TextButton>

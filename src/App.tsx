@@ -25,6 +25,7 @@ import { ClickListener } from './components/common/model/ClickableText';
 import { ReactionButtons } from './components/reaction/ReactionButtons';
 import { madoiUrl, madoiKey, skyWayEnabled, skyWayAppId, skyWaySecret } from './keys';
 import { MediaManager } from './util/media/MediaManager';
+import { AvatarReactionModel } from './components/virtualroom/model/AvatarReactionModel';
 
 const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
 const ls = new LocalJsonStorage<{id: string, name: string}>(roomId);
@@ -59,6 +60,7 @@ export default function App(){
         new VirtualRoomOwnModel(roomId, selfName, [Math.random() * 300, Math.random() * 300]));
     const vrm = useSharedModel(app.madoi, ()=>
         new VirtualRoomModel(roomId, "defaultFloor_sd35.png"));
+    const arm = useSharedModel(app.madoi, ()=>new AvatarReactionModel());
     const onVirtualRoomSelfNameChange = (name: string)=>{
         setSelfName(name);
         app.storage.set("name", name);
@@ -77,8 +79,7 @@ export default function App(){
 
     // Reaction buttons
     const onReactionTextClick: ClickListener = ({detail: {text}})=>{
-        // TODO
-        // vrlm.startTextReaction(text);
+        arm.doReaction(vrom.selfPeer.id, text);
     };
 
     useEffect(()=>{
@@ -95,7 +96,7 @@ export default function App(){
             <VideoMeeting {...{model: vmModel, mediaManager, skyWay}} />
         </Grid>
         <Grid size={6}>
-            <VirtualRoom {...{vrm, vrom, selfName, onSelfNameChange: onVirtualRoomSelfNameChange}} />
+            <VirtualRoom {...{vrm, vrom, arm, selfName, onSelfNameChange: onVirtualRoomSelfNameChange}} />
         </Grid>
         <Grid size={6}>
             <CustomTabs labels={["チャット", "ボード1", "ボード2", "付箋ボード", "効果"]}>

@@ -11,16 +11,18 @@ class DragState{
     }
 }
 interface Props{
+    gRef?: React.RefObject<SVGGElement | null>;
     avatar: AvatarModel;
 }
-export function Avatar({avatar}: Props){
-    return <g transform={`translate(${avatar.position[0]} ${avatar.position[1]})`}>
+export function Avatar({gRef, avatar}: Props){
+    return <g ref={gRef} transform={`translate(${avatar.position[0]} ${avatar.position[1]})`}>
         <circle r={24} fill="#99aaFF"></circle>
         <text textAnchor="middle" dominantBaseline="middle">{avatar.name}</text>
     </g>;
 }
-export function SelfAvatar({avatar}: Props){
+export function SelfAvatar({gRef, avatar}: Props){
     const gr = useRef<SVGGElement>(null!);
+    if(!gRef) gRef = gr;
     const drag = useRef<DragState | null>(null);
     const onPointerDown = (e: PointerEvent<SVGGElement>)=>{
         e.preventDefault();
@@ -31,7 +33,7 @@ export function SelfAvatar({avatar}: Props){
         e.preventDefault();
         if(drag.current === null) return;
         const {dx, dy} = drag.current.move(e.clientX, e.clientY);
-        gr.current.setAttribute("transform", `translate(${avatar.position[0] + dx} ${avatar.position[1] + dy})`);
+        gRef.current?.setAttribute("transform", `translate(${avatar.position[0] + dx} ${avatar.position[1] + dy})`);
     }
     const onPointerUp = (e: PointerEvent<SVGGElement>)=>{
         e.preventDefault();
@@ -40,7 +42,7 @@ export function SelfAvatar({avatar}: Props){
         avatar.translate(dx, dy);
         drag.current = null;
     }
-    return <g ref={gr} transform={`translate(${avatar.position[0]} ${avatar.position[1]})`}
+    return <g ref={gRef} transform={`translate(${avatar.position[0]} ${avatar.position[1]})`}
             onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
         <circle r={24} fill="#0fa"></circle>
         <text textAnchor="middle" dominantBaseline="middle">{avatar.name}</text>

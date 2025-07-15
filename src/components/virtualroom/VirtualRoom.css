@@ -1,0 +1,11 @@
+.action_effect {
+  animation: action_effect 1s;
+}
+@keyframes action_effect {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-4%);
+  }
+}
