@@ -1,4 +1,4 @@
-import { Share, ShareClass } from "madoi-client";
+import { Notify, ShareClass } from "madoi-client";
 
 @ShareClass({className: "AudioPlayer"})
 export class AudioPlayer {
@@ -9,7 +9,7 @@ export class AudioPlayer {
         this.audio.volume = volume;
     }
 
-    @Share({maxLog: 0})
+    @Notify()
     play(){
         this.audio.play();
     }

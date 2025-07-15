@@ -1,4 +1,4 @@
-import { Share, ShareClass, TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
+import { Notify, ShareClass, TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
 
 export interface AvatarReactionDetail{
     avatarId: string;
@@ -7,7 +7,7 @@ export interface AvatarReactionDetail{
 export type AvatarReactionListener = TypedEventListenerOrEventListenerObject<AvatarReactionModel, AvatarReactionDetail>;
 @ShareClass({className: "AvatarReactionModel"})
 export class AvatarReactionModel extends TypedEventTarget<AvatarReactionModel, {reaction: AvatarReactionDetail}>{
-    @Share({maxLog: 0})
+    @Notify()
     doReaction(avatarId: string, reaction: string){
         this.dispatchCustomEvent("reaction", {avatarId, reaction});
     }

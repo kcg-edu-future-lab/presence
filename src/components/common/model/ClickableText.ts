@@ -1,4 +1,4 @@
-import { Share, ShareClass, TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
+import { Notify, ShareClass, TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
 
 export interface ClickDetail{
     text: string;
@@ -10,7 +10,7 @@ export class ClickeableText
 extends TypedEventTarget<ClickeableText, {
     click: ClickDetail}
 >{
-    @Share({maxLog: 0})
+    @Notify()
     click(text: string): void{
         this.dispatchCustomEvent("click", {text});
     }
