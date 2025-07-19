@@ -17,7 +17,11 @@ export function Chat({logs, onChat}: Props){
     sentenceInputRef.current.value = "";
   };
   useEffect(()=>{
-    //chatLogDivRef.current.scrollIntoView();
+    const d = chatLogDivRef.current;
+    d.scrollTo({
+      top: d.scrollHeight,
+      behavior: 'smooth'
+    });
   });
   return <div>
     <form onSubmit={onSubmit}>
