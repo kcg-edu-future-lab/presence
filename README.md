@@ -12,7 +12,7 @@ ReactとTypeScriptを使用して開発されています。
 以下の機能が実装されています。
 
 - ビデオ会議(画面上部)
-  - `keys.ts` の `skyWayEnabled` を `true` にし、SkyWayのIDとシークレットを設定すれば、ビデオ会議機能が有効になります。カメラや画面共有、マイクの共有には[SkyWay](https://skyway.ntt.com/ja/)を使用しています。仮想背景はGoogleの[mediapipe](https://ai.google.dev/edge/mediapipe/solutions/guide?hl=ja)を利用しています。
+  - `keys.ts` の `skyWayEnabled` を `true` にし、SkyWayのIDとシークレットを設定すれば、ビデオ会議機能が有効になります。カメラや画面共有、マイクの共有には[SkyWay](https://skyway.ntt.com/ja/)を使用しています。仮想背景の実装にはGoogleの[mediapipe](https://ai.google.dev/edge/mediapipe/solutions/guide?hl=ja)を利用しています。
   - 利用者の入退室管理にMadoiを使用しています。
 - 仮想オフィス(画面左下)
   - 背景画像上に利用者を表すアバター(円に名前が描画されたもの)が描画されます。アバター同士が近ければ声が聞こえ、遠くなると声が小さくなります。
@@ -32,7 +32,7 @@ ReactとTypeScriptを使用して開発されています。
 
 # 動作環境
 
-Chromeの動作確認を行なっています。
+Chromeでの動作確認を行なっています。
 
 ローカルで起動(以下、`Presenceの起動`参照)するには、docker compose 又は Node.js が必要です。静的ビルドにも対応しており、
 distディレクトリに生成されたファイル群をWebサーバに設置しても構いません。
