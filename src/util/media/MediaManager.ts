@@ -1,11 +1,17 @@
-import { StreamCreatedDetail, StreamCreatedListener, StreamUpdatedListener, TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from "./StreamManagers";
+import { TypedEventTarget } from "madoi-client";
+import { StreamCreatedDetail, StreamUpdatedDetail, TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from "./StreamManagers";
 
-export class MediaManager{
+export class MediaManager extends TypedEventTarget<MediaManager, {
+    userStreamCreated: StreamCreatedDetail;
+    userStreamUpdated: StreamUpdatedDetail;
+    screenShareStopped: void;
+}>{
     private userMediaSM = new UserMediaStreamManager();
     private virtualBGSM: VirtualBackgroundStreamManager;
     private screenShareSM = new TakingplaceScreenStreamManager();
 
     constructor(vbImagePath: string){
+        super();
         this.virtualBGSM = new VirtualBackgroundStreamManager(vbImagePath);
     }
 
@@ -13,35 +19,31 @@ export class MediaManager{
         return this.screenShareSM;
     }
 
-    start(onUserStreamCreated: StreamCreatedListener,
-        onUserStreamUpdated: StreamUpdatedListener,
-        onScreenShareStopped: ()=>void
-     ){
+    start(){
+        console.log("mediaManager.start");
         this.virtualBGSM.attach(this.userMediaSM);
         this.screenShareSM.attach(this.virtualBGSM);
-        this.screenShareSM.addEventListener("streamCreated", onUserStreamCreated);
-        this.screenShareSM.addEventListener("streamUpdated", onUserStreamUpdated);
-        this.screenShareSM.onScreenShareStopped = onScreenShareStopped;
-        this.userMediaSM.acquire();
+        this.screenShareSM.addEventListener("streamCreated", ({detail})=>{
+            this.dispatchCustomEvent("userStreamCreated", detail);
+        });
+        this.screenShareSM.addEventListener("streamUpdated", ({detail})=>{
+            this.dispatchCustomEvent("userStreamUpdated", detail);
+        });
+        this.screenShareSM.onScreenShareStopped = ()=>{
+            this.dispatchCustomEvent("screenShareStopped");
+        };
     }
 
-    setMicEnabled(value: boolean){
-        this.userMediaSM.setMicState(value);
+    async setMicEnabled(value: boolean){
+        await this.userMediaSM.setMicState(value);
     }
-    setCameraEnabled(value: boolean){
-        this.userMediaSM.setCameraState(value);
+    async setCameraEnabled(value: boolean){
+        await this.userMediaSM.setCameraState(value);
     }
     isScreenShareEnabled(){
         return this.screenShareSM.enabled;
     }
-    setScreenShareEnabled(value: boolean){
-        this.screenShareSM.setEnabled(value);
+    async setScreenShareEnabled(value: boolean){
+       return await this.screenShareSM.setEnabled(value);
     }
 }
-
-/*
-  mic　→
-  camera → virtual background →　out
-  screen share　→
-
- */

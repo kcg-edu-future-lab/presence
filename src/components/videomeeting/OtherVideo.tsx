@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { MouseEventHandler, useEffect, useRef, useState } from "react";
 import { NameChangedListener, OtherPeerModel, SkyWayIdChangedListener, StreamChangedListener, VolumeChangedListener } from "./model/OtherPeerModel";
 import { eventListnersEffect } from "madoi-client-react";
 
@@ -9,6 +9,7 @@ export function OtherVideo({model}: Props){
     const videoRef = useRef<HTMLVideoElement>(null!);
     const [name, setName] = useState(model.name);
     const [skyWayId, setSkyWayId] = useState(model.skyWayId);
+    const [playButtonVisible, setPlayButtonVisible] = useState(false);
 
     const nameChanged: NameChangedListener = ({detail: {name}})=>{
         setName(name);
@@ -26,8 +27,18 @@ export function OtherVideo({model}: Props){
         const video = videoRef.current;
         video.srcObject = stream;
         video.muted = false;
-        video.play().catch(e=>console.log(e));
+        video.play().catch((e: Error)=>{
+            console.log(e);
+            if(e.name === "NotAllowedError"){
+                setPlayButtonVisible(true);
+            }
+        });
     };
+    const onPlayButtonClicked: MouseEventHandler = ()=>{
+        const video = videoRef.current;
+        video.play().catch(e=>console.log(e));
+        setPlayButtonVisible(false);
+    }
     useEffect(()=>{
         return eventListnersEffect(model,
             {nameChanged, volumeChanged, skyWayIdChanged, streamChanged});
@@ -41,6 +52,7 @@ export function OtherVideo({model}: Props){
           <video ref={videoRef} data-madoiid={model.madoiId} data-skywayid={skyWayId} width="100%" height="100%"
               style={{ display: "inline-block" }} autoPlay playsInline />
           <div style={{position: "absolute", bottom: "0px", color: "white",
-            width: "100%", background: "rgba(180, 180, 255, 0.4)"}}>{name}</div>
+            width: "100%", background: "rgba(180, 180, 255, 0.4)"}}>{name}
+            {playButtonVisible ? <button onClick={onPlayButtonClicked}>play</button> : ""}</div>
     </div>;
 }

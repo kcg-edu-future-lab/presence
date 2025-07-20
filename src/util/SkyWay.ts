@@ -1,83 +1,92 @@
-import { LocalAudioStream, LocalStream, LocalVideoStream, RemoteAudioStream, RemoteVideoStream, RoomPublication, SkyWayAuthToken, SkyWayContext, SkyWayRoom, nowInSec, uuidV4 } from "@skyway-sdk/room";
+import { LocalAudioStream, LocalP2PRoomMember, LocalStream, LocalVideoStream, RemoteAudioStream, RemoteVideoStream, RoomMember, RoomPublication, SkyWayAuthToken, SkyWayContext, SkyWayRoom, nowInSec, uuidV4 } from "@skyway-sdk/room";
 import { TypedEventTarget } from "madoi-client";
 
 export interface ConnectedDetail{
     selfPeerId: string;
+}
+export interface PeerArrivedDetail{
+    peerId: string;
 }
 export interface PeerStreamArrivedDetail{
     peerId: string;
     track: MediaStreamTrack;
     type: "audio" | "video";
 }
-export interface PeerStreamLeavedDetail{
-    peerId: string;
-}
 export interface PeerLeavedDetail{
     peerId: string;
 }
 
 export class SkyWay extends TypedEventTarget<SkyWay, {
-    connected: ConnectedDetail,
-    peerStreamArrived: PeerStreamArrivedDetail,
-    streamDestroyed: PeerStreamLeavedDetail,
-    peerLeaved: PeerLeavedDetail
+    connected: ConnectedDetail;
+    peerArrived: PeerArrivedDetail;
+    peerStreamArrived: PeerStreamArrivedDetail;
+    peerLeaved: PeerLeavedDetail;
 }>{
-    constructor(private appId: string = "", private secret: string = "", private roomId = ""){
+    constructor(private appId: string, private secret: string, private roomId: string){
         super();
     }
 
-    setAppId(appId: string){
-        this.appId = appId;
-    }
-
-    setSecret(secret: string){
-        this.secret = secret;
-    }
-
-    setRoomId(roomId: string){
-        this.roomId = roomId;
-    }
-
+    private me?: LocalP2PRoomMember;
+    private audioPub?: RoomPublication<LocalAudioStream>;
     private videoPub?: RoomPublication<LocalVideoStream>;
 
-    replaceVideoStream(videoTracks: MediaStreamTrack[]){
-        if(!this.videoPub) return;
-        if(this.videoPub.stream?.track === videoTracks[0]) return;
-        const s = new LocalVideoStream(videoTracks[0], {stopTrackWhenDisabled: false});
-        this.videoPub.replaceStream(s, {releaseOldStream: false});
+    async updateAudioStream(audioTrack: MediaStreamTrack){
+        if(!this.me) throw new Error("SkyWay not started.");
+        const ls = new LocalAudioStream(audioTrack, {stopTrackWhenDisabled: true});
+        if(!this.audioPub){
+            this.audioPub = await this.me.publish(ls);
+        } else{
+            if(this.audioPub.stream?.track === audioTrack) return;
+            this.audioPub.replaceStream(ls, {releaseOldStream: false});
+        }
     }
 
-    async start(selfStream: MediaStream){
+    async updateVideoStream(videoTrack: MediaStreamTrack){
+        if(!this.me) throw new Error("SkyWay not started.");
+        const ls = new LocalVideoStream(videoTrack, {stopTrackWhenDisabled: false});
+        if(!this.videoPub){
+            this.videoPub = await this.me.publish(ls);
+        } else{
+            if(this.videoPub.stream?.track === videoTrack) return;
+            this.videoPub.replaceStream(ls, {releaseOldStream: false});
+        }
+    }
+
+    async start(){
         const context = await SkyWayContext.Create(createSkywayAuthToken(this.appId, this.secret));
         const room = await SkyWayRoom.FindOrCreate(
             context, {type: 'p2p', name: this.roomId});
-        const me = await room.join();
-        console.log(`[SkyWay.start] joined to room ${this.roomId}, selfId: ${me.id}`);
+        this.me = await room.join();
+        console.log(`[SkyWay.start] joined to room ${this.roomId}, selfId: ${this.me.id}`);
         window.addEventListener("beforeunload", ()=>{
-            me.leave();
+            this.me?.leave();
         });
-        this.dispatchCustomEvent("connected", {selfPeerId: me.id});
+        this.dispatchCustomEvent("connected", {selfPeerId: this.me.id});
 
-        const audio = new LocalAudioStream(selfStream.getAudioTracks()[0], {stopTrackWhenDisabled: false});
-        const video = new LocalVideoStream(selfStream.getVideoTracks()[0], {stopTrackWhenDisabled: false});
-        await me.publish(audio);
-        this.videoPub = await me.publish(video);
-      
+        // 他のユーザの存在を通知する
+        const firePeerArrived = (m: RoomMember)=>{
+            if(!this.me) return;
+            if (m.id === this.me.id) return;
+            this.dispatchCustomEvent("peerArrived", {peerId: m.id});
+        };
         // 他のユーザのpublicationをsubscribeする
         const subscribeAndAttach = async (publication: RoomPublication<LocalStream>) => {
+            if(!this.me) return;
             const publisherId = publication.publisher.id;
-            if (publisherId === me.id) return;
-            const { stream } = await me.subscribe(publication.id);
+            if (publisherId === this.me.id) return;
+            const { stream } = await this.me.subscribe(publication.id);
             console.log(`[SkyWay] subscribe to peer ${publisherId}, streamType: ${stream.contentType}`);
             if(stream instanceof RemoteVideoStream || stream instanceof RemoteAudioStream){
                 this.dispatchCustomEvent("peerStreamArrived", {
                     peerId: publisherId, track: stream.track, type: stream.contentType});
             }
         };
+        room.members.forEach(firePeerArrived);
         room.publications.forEach(subscribeAndAttach);
+        room.onMemberJoined.add((e) => firePeerArrived(e.member));
         room.onStreamPublished.add((e) => subscribeAndAttach(e.publication));
         room.onMemberLeft.add((e) => {
-            if (e.member.id === me.id) return;
+            if (e.member.id === this.me?.id) return;
             this.dispatchCustomEvent("peerLeaved", {peerId: e.member.id});
         });
     }

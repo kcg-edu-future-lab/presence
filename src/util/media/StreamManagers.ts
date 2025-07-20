@@ -52,46 +52,47 @@ export class UserMediaStreamManager extends StreamManager{
         return this._stream;
     }
 
-    setStates(micOn: boolean, cameraOn: boolean, ){
+    async setStates(micOn: boolean, cameraOn: boolean, ){
         this.updateMediaStream(micOn, cameraOn);
     }
 
-    setMicState(on: boolean){
+    async setMicState(on: boolean){
         this.updateMediaStream(on, this._cameraOn);
     }
 
-    setCameraState(on: boolean){
+    async setCameraState(on: boolean){
         this.updateMediaStream(this._micOn, on);
-    }
-
-    acquire(){
-        navigator.mediaDevices
-            .getUserMedia({audio: true, video: true})
-            .then(stream=>{
-                stream.getAudioTracks().forEach(t => t.enabled = false);
-                stream.getVideoTracks().forEach(t => t.enabled = false);
-                this._stream = stream;
-                this._micOn = false;
-                this._cameraOn = false;
-                this.dispatchCustomEvent("streamCreated", {stream, micOn: false, cameraOn: false});
-            });
     }
 
     private async updateMediaStream(micOn: boolean, cameraOn: boolean){
         if(this.micOn === micOn && this.cameraOn === cameraOn) return;
-        if(this._stream === null){
-            if(!micOn && !cameraOn) return;
-            return;
+        const micRequired = micOn && (!this._stream || this._stream.getAudioTracks().length === 0);
+        if(!micOn && this._stream){
+            let tracks: MediaStreamTrack[] = [];
+            this._stream.getAudioTracks().forEach(t=>{t.stop(); tracks.push(t)});
+            tracks.forEach(t=>this._stream?.removeTrack(t));
         }
-        if(this.cameraOn !== cameraOn){
-            this._stream.getVideoTracks().forEach(t=>t.enabled = cameraOn);
+        const camRequired = cameraOn && (!this._stream || this._stream.getVideoTracks().length === 0);
+        if(!cameraOn && this._stream){
+            let tracks: MediaStreamTrack[] = [];
+            this._stream.getVideoTracks().forEach(t=>{t.stop(); tracks.push(t)});
+            tracks.forEach(t=>this._stream?.removeTrack(t));
         }
-        if(this.micOn !== micOn){
-            this._stream.getAudioTracks().forEach(track => track.enabled = micOn);
+        if(micRequired || camRequired){
+            const stream = await navigator.mediaDevices
+                .getUserMedia({audio: micRequired, video: camRequired});
+            if(!this._stream){
+                this._stream = new MediaStream(stream);
+                this.dispatchCustomEvent("streamCreated", {stream, micOn, cameraOn});
+            } else{
+                stream.getTracks().forEach(t=>this._stream?.addTrack(t));
+                this.dispatchCustomEvent("streamUpdated", {stream: this._stream, micOn, cameraOn});
+            }
+        } else if(this._stream){
+            this.dispatchCustomEvent("streamUpdated", {stream: this._stream, micOn, cameraOn});
         }
         this._micOn = micOn;
         this._cameraOn = cameraOn;
-        this.dispatchCustomEvent("streamUpdated", {stream: this._stream, cameraOn, micOn});
     }
 }
 
@@ -139,13 +140,15 @@ export class VirtualBackgroundStreamManager extends StreamManager{
     attach(sm: StreamManager){
         this.sourceSM = sm;
         sm.addEventListener("streamCreated", ({detail: {stream, cameraOn, micOn}})=>{
-            this.setupVbStream(stream)!;
+            this.setupVbStream(stream);
             if(cameraOn) requestAnimationFrame(()=>this.drawVbImage());
             this.dispatchCustomEvent("streamCreated", {stream: this.outputStream, cameraOn, micOn});
         });
 
         sm.addEventListener("streamUpdated", ({detail: {stream, cameraOn, micOn}})=>{
             if(cameraOn){
+                this.outputStream = new MediaStream();
+                this.setupVbStream(stream);
                 requestAnimationFrame(()=>this.drawVbImage());
             } else{
                 const ctx = this.canvas.getContext("2d")!;
@@ -257,20 +260,20 @@ export class TakingplaceScreenStreamManager extends StreamManager{
         try{
             const s: MediaStream = await (navigator.mediaDevices as any).getDisplayMedia({
                 audio: false, video: true });
+            this._enabled = true;
             s.getVideoTracks().find(()=>true)?.addEventListener("ended", ()=>{
                 this.stopScreenSharing();
             });
             const stream = new MediaStream();
-            stream.addTrack(s.getVideoTracks()[0]);
-            stream.addTrack(this.sourceSM.stream.getAudioTracks()[0]);
+            s.getVideoTracks().forEach(t=>stream.addTrack(t));
+            this.sourceSM.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
             this.outputStream = stream;
             this.dispatchCustomEvent("streamUpdated", {
                 stream,
                 micOn: this.sourceSM.micOn,
                 cameraOn: this.sourceSM.cameraOn});
-            this._enabled = true;
-        } catch(_){
-            console.log("failed to share screen.");
+        } catch(e){
+            console.log("failed to share screen.", e);
         }
     }
 
