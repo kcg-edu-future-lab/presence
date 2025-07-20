@@ -26,7 +26,7 @@ export function OtherVideo({model}: Props){
         const video = videoRef.current;
         video.srcObject = stream;
         video.muted = false;
-        video.play();
+        video.play().catch(e=>console.log(e));
     };
     useEffect(()=>{
         return eventListnersEffect(model,
