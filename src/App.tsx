@@ -37,7 +37,7 @@ export const AppContext = createContext({
             id: ls.get("id", ()=>uuidv4()),
             profile: {name: ls.get("name", "匿名")}
         }),
-    asr: new ASREngine(),
+    asr: new ASREngine(true),
     mediaManager: skyWayEnabled ? new MediaManager(vbImagePath) : null,
     skyWay: skyWayEnabled ? new SkyWay(skyWayAppId, skyWaySecret, roomId) : undefined
 });

@@ -1,13 +1,12 @@
 import { ASREngine } from "../../util/ASREngine";
-import { MouseEventHandler, useEffect, useRef, useState } from "react";
+import { ChangeEventHandler, useEffect, useState } from "react";
 
 interface Props{
     engine: ASREngine;
 }
 export function ASR({engine}: Props){
-  const first = useRef(true);
   const [enabled, setEnabled] = useState(engine.isRecognizing());
-  const onEnabledClick: MouseEventHandler<HTMLInputElement> = e=>{
+  const onEnabledChange: ChangeEventHandler<HTMLInputElement> = e=>{
     if(e.currentTarget.checked){
         engine.start();
         setEnabled(true);
@@ -15,17 +14,13 @@ export function ASR({engine}: Props){
         engine.stop();
     }
   };
-  const onKeepEnabledClick: MouseEventHandler<HTMLInputElement> = e=>{
+  const onKeepEnabledChange: ChangeEventHandler<HTMLInputElement> = e=>{
     engine.setKeepEnabled(e.currentTarget.checked);    
   };
   const onEngineFinished = ()=>{
       setEnabled(false);
   };
   useEffect(()=>{
-    if(first.current){
-      engine.setKeepEnabled(true);
-      first.current = false;
-    }
     engine.addEventListener("finished", onEngineFinished);
     return ()=>{
       engine.removeEventListener("finished", onEngineFinished);
@@ -33,8 +28,8 @@ export function ASR({engine}: Props){
   },[]);
   return <div>
     <label style={{marginBottom: 0}}>
-      <input type="checkbox" checked={enabled} onClick={onEnabledClick} />音声認識</label>&nbsp;
+      <input type="checkbox" checked={enabled} onChange={onEnabledChange} />音声認識</label>&nbsp;
     <label style={{marginBottom: 0}}>
-      <input type="checkbox" defaultChecked={true} onClick={onKeepEnabledClick} />onにし続ける(最長1時間)</label>&nbsp;
+      <input type="checkbox" defaultChecked={engine.isKeepEnabled()} onChange={onKeepEnabledChange} />onにし続ける(最長1時間)</label>&nbsp;
   </div>;
 }
