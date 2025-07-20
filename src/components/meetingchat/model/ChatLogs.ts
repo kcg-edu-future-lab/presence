@@ -1,4 +1,5 @@
-import { GetState, SetState, Share, ShareClass, TypedEventTarget } from "madoi-client";
+import { GetState, SetState, Share, ShareClass } from "madoi-client";
+import { TypedCustomEventTarget } from "tcet";
 
 const ignoreWords = new Set<string>(["そう"]);
 
@@ -15,7 +16,7 @@ export interface LogAddedDetail{
     sentence: string;
 }
 @ShareClass({className: "ChatLogs"})
-export class ChatLogs extends TypedEventTarget<ChatLogs, {
+export class ChatLogs extends TypedCustomEventTarget<ChatLogs, {
     logAdded: LogAddedDetail
 }>{
     private logs: Log[] = [];

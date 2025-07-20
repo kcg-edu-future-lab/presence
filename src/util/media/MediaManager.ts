@@ -1,7 +1,7 @@
-import { TypedEventTarget } from "madoi-client";
+import { TypedCustomEventTarget } from "tcet";
 import { StreamCreatedDetail, StreamUpdatedDetail, TakingplaceScreenStreamManager, UserMediaStreamManager, VirtualBackgroundStreamManager } from "./StreamManagers";
 
-export class MediaManager extends TypedEventTarget<MediaManager, {
+export class MediaManager extends TypedCustomEventTarget<MediaManager, {
     userStreamCreated: StreamCreatedDetail;
     userStreamUpdated: StreamUpdatedDetail;
     screenShareStopped: void;

@@ -1,19 +1,19 @@
-import { TypedEventListener, TypedEventTarget } from "madoi-client";
+import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 import { SkyWay } from "../../../util/SkyWay";
 
 export interface MadoiIdChangedDetail{
     madoiId: string;
 }
-export type MadoiIdChangedListener = TypedEventListener<SelfPeerModel, MadoiIdChangedDetail>;
+export type MadoiIdChangedListener = TypedCustomEventListenerOrObject<SelfPeerModel, MadoiIdChangedDetail>;
 export interface NameChangedDetail{
     name: string;
 }
-export type NameChangedListener = TypedEventListener<SelfPeerModel, NameChangedDetail>;
+export type NameChangedListener = TypedCustomEventListenerOrObject<SelfPeerModel, NameChangedDetail>;
 export interface SkyWayIdChangedDetail{
     skyWayId: string;
 }
-export type SkyWayIdChangedListener = TypedEventListener<SelfPeerModel, SkyWayIdChangedDetail>;
-export class SelfPeerModel extends TypedEventTarget<SelfPeerModel, {
+export type SkyWayIdChangedListener = TypedCustomEventListenerOrObject<SelfPeerModel, SkyWayIdChangedDetail>;
+export class SelfPeerModel extends TypedCustomEventTarget<SelfPeerModel, {
     madoiIdChanged: MadoiIdChangedDetail,
     nameChanged: NameChangedDetail,
     skyWayIdChanged: SkyWayIdChangedDetail

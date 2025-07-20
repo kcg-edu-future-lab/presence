@@ -1,4 +1,4 @@
-import { TypedEventListener, TypedEventTarget } from "madoi-client";
+import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 import { VirtualBackground } from "./VirtualBackground";
 
 export interface StreamCreatedDetail{
@@ -6,14 +6,14 @@ export interface StreamCreatedDetail{
     cameraOn: boolean;
     micOn: boolean;
 }
-export type StreamCreatedListener = TypedEventListener<StreamManager, StreamCreatedDetail>;
+export type StreamCreatedListener = TypedCustomEventListenerOrObject<StreamManager, StreamCreatedDetail>;
 export interface StreamUpdatedDetail{
     stream: MediaStream;
     cameraOn: boolean;
     micOn: boolean;
 }
-export type StreamUpdatedListener = TypedEventListener<StreamManager, StreamUpdatedDetail>;
-export class StreamManager extends TypedEventTarget<StreamManager, {
+export type StreamUpdatedListener = TypedCustomEventListenerOrObject<StreamManager, StreamUpdatedDetail>;
+export class StreamManager extends TypedCustomEventTarget<StreamManager, {
     streamCreated: StreamCreatedDetail,
     streamUpdated: StreamUpdatedDetail,
     streamDestroyed: void

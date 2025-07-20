@@ -1,4 +1,4 @@
-import { TypedEventTarget } from "madoi-client";
+import { TypedCustomEventTarget } from "tcet";
 
 export interface NameChangedDetail{
     name: string;
@@ -6,7 +6,7 @@ export interface NameChangedDetail{
 export interface TranslatedDetail{
     position: [number, number];
 }
-export class AvatarModel extends TypedEventTarget<AvatarModel, {
+export class AvatarModel extends TypedCustomEventTarget<AvatarModel, {
     nameChanged: NameChangedDetail,
     positionChanged: TranslatedDetail
 }>{

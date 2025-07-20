@@ -1,13 +1,13 @@
-import { TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
+import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 
 export interface ASRResult{
   results: string[];
 }
-export type ASRResultListener = TypedEventListenerOrEventListenerObject<ASREngine, ASRResult>;
+export type ASRResultListener = TypedCustomEventListenerOrObject<ASREngine, ASRResult>;
 export interface ASRFinished{
 }
-export type ASRFinishedListener = TypedEventListenerOrEventListenerObject<ASREngine, ASRFinished>;
-export class ASREngine extends TypedEventTarget<ASREngine, {
+export type ASRFinishedListener = TypedCustomEventListenerOrObject<ASREngine, ASRFinished>;
+export class ASREngine extends TypedCustomEventTarget<ASREngine, {
   results: ASRResult,
   finished: ASRFinished
 }>{

@@ -1,22 +1,22 @@
-import { TypedEventListener, TypedEventTarget } from "madoi-client";
+import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 
 export interface NameChangedDetail{
     name: string;
 }
-export type NameChangedListener = TypedEventListener<OtherPeerModel, NameChangedDetail>;
+export type NameChangedListener = TypedCustomEventListenerOrObject<OtherPeerModel, NameChangedDetail>;
 export interface VolumeChangedDetail{
     volume: number;
 }
-export type VolumeChangedListener = TypedEventListener<OtherPeerModel, VolumeChangedDetail>;
+export type VolumeChangedListener = TypedCustomEventListenerOrObject<OtherPeerModel, VolumeChangedDetail>;
 export interface SkyWayIdChangedDetail{
     skyWayId: string;
 }
-export type SkyWayIdChangedListener = TypedEventListener<OtherPeerModel, SkyWayIdChangedDetail>;
+export type SkyWayIdChangedListener = TypedCustomEventListenerOrObject<OtherPeerModel, SkyWayIdChangedDetail>;
 export interface StreamChangedDetail{
     stream: MediaStream;
 }
-export type StreamChangedListener = TypedEventListener<OtherPeerModel, StreamChangedDetail>;
-export class OtherPeerModel extends TypedEventTarget<OtherPeerModel, {
+export type StreamChangedListener = TypedCustomEventListenerOrObject<OtherPeerModel, StreamChangedDetail>;
+export class OtherPeerModel extends TypedCustomEventTarget<OtherPeerModel, {
     nameChanged: NameChangedDetail,
     volumeChanged: VolumeChangedDetail,
     skyWayIdChanged: SkyWayIdChangedDetail,

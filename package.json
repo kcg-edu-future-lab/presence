@@ -17,11 +17,12 @@
     "@mui/material": "^7.2.0",
     "@skyway-sdk/core": "^1.12.0",
     "@skyway-sdk/room": "^1.12.0",
-    "madoi-client": "^0.1.2",
-    "madoi-client-react": "^0.1.4",
+    "madoi-client": "^0.1.4",
+    "madoi-client-react": "^0.1.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
+    "tcet": "^1.0.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

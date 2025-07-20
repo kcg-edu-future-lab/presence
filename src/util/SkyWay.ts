@@ -1,5 +1,5 @@
 import { LocalAudioStream, LocalP2PRoomMember, LocalStream, LocalVideoStream, RemoteAudioStream, RemoteVideoStream, RoomMember, RoomPublication, SkyWayAuthToken, SkyWayContext, SkyWayRoom, nowInSec, uuidV4 } from "@skyway-sdk/room";
-import { TypedEventTarget } from "madoi-client";
+import { TypedCustomEventTarget } from "tcet";
 
 export interface ConnectedDetail{
     selfPeerId: string;
@@ -16,7 +16,7 @@ export interface PeerLeavedDetail{
     peerId: string;
 }
 
-export class SkyWay extends TypedEventTarget<SkyWay, {
+export class SkyWay extends TypedCustomEventTarget<SkyWay, {
     connected: ConnectedDetail;
     peerArrived: PeerArrivedDetail;
     peerStreamArrived: PeerStreamArrivedDetail;

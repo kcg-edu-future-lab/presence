@@ -1,7 +1,8 @@
-import { BeforeEnterRoom, EnterRoomAllowed, EnterRoomAllowedDetail, Madoi, PeerEntered, PeerEnteredDetail, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ShareClass, TypedEventTarget } from "madoi-client";
+import { BeforeEnterRoom, EnterRoomAllowed, EnterRoomAllowedDetail, Madoi, PeerEntered, PeerEnteredDetail, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ShareClass } from "madoi-client";
 import { SkyWay } from "../../../util/SkyWay";
 import { OtherPeerModel } from "./OtherPeerModel";
 import { SelfPeerModel } from "./SelfPeerModel";
+import { TypedCustomEventTarget } from "tcet";
 
 interface PeerStream{
     peerId: string;
@@ -13,7 +14,7 @@ export interface ConnectedDetail{
 }
 @ShareClass({className: "VideoMeetingOwnModel"})
 export class VideoMeetingOwnModel
-extends TypedEventTarget<VideoMeetingOwnModel, {connected: ConnectedDetail}>{
+extends TypedCustomEventTarget<VideoMeetingOwnModel, {connected: ConnectedDetail}>{
     private madoi?: Madoi;
     private unattachedSkyWayPeerStreams: PeerStream[] = [];
     private _self?: SelfPeerModel;

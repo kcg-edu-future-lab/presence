@@ -1,13 +1,14 @@
-import { Notify, ShareClass, TypedEventListenerOrEventListenerObject, TypedEventTarget } from "madoi-client";
+import { Notify, ShareClass } from "madoi-client";
+import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 
 export interface ClickDetail{
     text: string;
 }
-export type ClickListener = TypedEventListenerOrEventListenerObject<ClickeableText, ClickDetail>;
+export type ClickListener = TypedCustomEventListenerOrObject<ClickeableText, ClickDetail>;
 
 @ShareClass({className: "ClickeableText"})
 export class ClickeableText
-extends TypedEventTarget<ClickeableText, {
+extends TypedCustomEventTarget<ClickeableText, {
     click: ClickDetail}
 >{
     @Notify()
