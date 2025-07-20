@@ -63,6 +63,7 @@ export default function App(){
     const arm = useSharedModel(app.madoi, ()=>new AvatarReactionModel());
     const onVirtualRoomSelfNameChange = (name: string)=>{
         setSelfName(name);
+        if(vmModel.selfPeer) vmModel.selfPeer.name = name;
         app.storage.set("name", name);
     };
 
