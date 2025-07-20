@@ -24,6 +24,7 @@ interface Props{
 }
 export function ReactionButtons({madoi, onTextClick}: Props){
     return <>
+        <span><small>効果音あり</small></span><br/>
         <AudioTextButton madoi={madoi} src={se1} volume={0.7} onClick={onTextClick}>🍺</AudioTextButton>
         <AudioTextButton madoi={madoi} src={se2} volume={0.7} onClick={onTextClick}>👏</AudioTextButton>
         <AudioTextButton madoi={madoi} src={se3} volume={0.7} onClick={onTextClick}>👏😄</AudioTextButton>
@@ -38,7 +39,8 @@ export function ReactionButtons({madoi, onTextClick}: Props){
         <AudioTextButton madoi={madoi} src={se12} volume={0.7} onClick={onTextClick}>🙏</AudioTextButton>
         <AudioTextButton madoi={madoi} src={se13} volume={0.7} onClick={onTextClick}>ポク・ポク・ポク</AudioTextButton>
         <AudioTextButton madoi={madoi} src={se14} volume={0.7} onClick={onTextClick}>チーン</AudioTextButton>
-        <br/>
+        <br/><br/>
+        <span><small>効果音なし</small></span><br/>
         <TextButton madoi={madoi} onClick={onTextClick}>🙂</TextButton>
         <TextButton madoi={madoi} onClick={onTextClick}>👏</TextButton>
         <TextButton madoi={madoi} onClick={onTextClick}>😄</TextButton>
