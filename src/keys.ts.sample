@@ -3,7 +3,8 @@ export const madoiUrl = "wss://your.domain.example.com/madoi-server/rooms";
 export const madoiKey = "MADOI_API_KEY";
 
 // SkyWay設定
-// ビデオ会議を使用する際は、skyWayEnabledにtrueを設定してskyWayAppIdとskyWaySecretを書き換えてください。
+// ビデオ会議を使用する際は、skyWayEnabledにtrueを設定してskyWayTokenUrlを指定してください。
 export const skyWayEnabled = false;
-export const skyWayAppId = "SKYWAY_APP_ID";
-export const skyWaySecret = "SKYWAY_SECRET";
+export const skyWayTokenUrl = "https://your.domain.example.com/madoi-server/skyWayToken?authToken=" + madoiKey;
+export const skyWayAppId = "";
+export const skyWaySecret = "";

@@ -16,16 +16,41 @@ export interface PeerLeavedDetail{
     peerId: string;
 }
 
+interface WithIdAndSecret{
+    appId: string;
+    secret: string;
+    roomId: string;
+}
+interface WithTokenUrl{
+    tokenUrl: string;
+    roomId: string;
+}
+export type SkyWayConfig = WithIdAndSecret | WithTokenUrl
+
 export class SkyWay extends TypedCustomEventTarget<SkyWay, {
     connected: ConnectedDetail;
     peerArrived: PeerArrivedDetail;
     peerStreamArrived: PeerStreamArrivedDetail;
     peerLeaved: PeerLeavedDetail;
 }>{
-    constructor(private appId: string, private secret: string, private roomId: string){
+    constructor(config: SkyWayConfig){
         super();
+        this.roomId = config.roomId;
+        if("tokenUrl" in config && config.tokenUrl !== ""){
+            this.tokenUrl = config.tokenUrl;
+        } else if("appId" in config && "secret"){
+            console.log(`[SkyWay] Using appId: ${config.appId}`);
+            this.appId = config.appId;
+            this.secret = config.secret;
+        } else{
+            throw new Error("SkyWay configuration is invalid. Provide either tokenUrl or appId and secret.");
+        }
     }
 
+    private roomId: string;
+    private appId?: string;
+    private secret?: string;
+    private tokenUrl?: string;
     private me?: LocalP2PRoomMember;
     private audioPub?: RoomPublication<LocalAudioStream>;
     private videoPub?: RoomPublication<LocalVideoStream>;
@@ -53,7 +78,7 @@ export class SkyWay extends TypedCustomEventTarget<SkyWay, {
     }
 
     async start(){
-        const context = await SkyWayContext.Create(createSkywayAuthToken(this.appId, this.secret));
+        const context = await SkyWayContext.Create(await this.getSkyWayToken());
         const room = await SkyWayRoom.FindOrCreate(
             context, {type: 'p2p', name: this.roomId});
         this.me = await room.join();
@@ -92,31 +117,31 @@ export class SkyWay extends TypedCustomEventTarget<SkyWay, {
     }
 
     stop(){
-        
-    }
-}
 
-function createSkywayAuthToken(applicationId: string, secretKey: string){
-    return new SkyWayAuthToken({
-        jti: uuidV4(), iat: nowInSec(), exp: nowInSec() + 60 * 60 * 24,
-        scope: {
-            app: {
-                id: applicationId, turn: true, actions: ['read'],
-                channels: [{
-                    id: '*', name: '*', actions: ['write'],
-                    members: [{
-                        id: '*', name: '*', actions: ['write'],
-                        publication: { actions: ['write']},
-                        subscription: { actions: ['write']},
-                    }],
-                    sfuBots: [{
-                        actions: ['write'],
-                        forwardings: [{
-                            actions: ['write']
-                        }]
+    }
+
+    private async getSkyWayToken(): Promise<string>{
+        if(this.appId && this.secret){
+            return new SkyWayAuthToken({
+                jti: uuidV4(), iat: nowInSec(), exp: nowInSec() + 60 * 60 * 24,
+                version: 3,
+                scope: {
+                    appId: this.appId,
+                    rooms: [{
+                        name: "*",
+                        methods: ["create", "close", "updateMetadata"],
+                        member: {
+                            name: "*",
+                            methods: ["publish", "subscribe", "updateMetadata"],
+                        },
                     }]
-                }]
-            }
+                }
+            }).encode(this.secret);
+        } else if(this.tokenUrl){
+            return await fetch(this.tokenUrl, {
+                method: "GET",
+            }).then(res=>res.text());
         }
-    }).encode(secretKey);
+        throw new Error("SkyWay token not available.");
+    }
 }

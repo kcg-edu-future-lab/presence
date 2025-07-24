@@ -23,7 +23,7 @@ import { TagBoard } from './components/tagboard/TagBoard';
 import { TagBoardModel } from './components/tagboard/model/TagBoardModel';
 import { ClickListener } from './components/common/model/ClickableText';
 import { ReactionButtons } from './components/reaction/ReactionButtons';
-import { madoiUrl, madoiKey, skyWayEnabled, skyWayAppId, skyWaySecret } from './keys';
+import { madoiUrl, madoiKey, skyWayEnabled, skyWayTokenUrl } from './keys';
 import { MediaManager } from './util/media/MediaManager';
 import { AvatarReactionModel } from './components/virtualroom/model/AvatarReactionModel';
 
@@ -39,7 +39,7 @@ export const AppContext = createContext({
         }),
     asr: new ASREngine(true),
     mediaManager: skyWayEnabled ? new MediaManager(vbImagePath) : null,
-    skyWay: skyWayEnabled ? new SkyWay(skyWayAppId, skyWaySecret, roomId) : undefined
+    skyWay: skyWayEnabled ? new SkyWay({tokenUrl: skyWayTokenUrl, roomId}) : undefined
 });
 
 export default function App(){
