@@ -24,7 +24,7 @@ export function ASRChat({selfName, asr, chatLogs}: Props){
         return ()=>{
             asr.removeEventListener("results", onAsrResults);
         };
-    }, []);
+    });
 
     return <>
         <Chat logs={chatLogs} onChat={onChat} />
