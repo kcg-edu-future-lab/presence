@@ -80,7 +80,7 @@ export const skyWayAppId = "SKYWAY_APP_ID";
 export const skyWaySecret = "SKYWAY_SECRET";
 ```
 
-MadoiサーバのデフォルトのMADOI_API_KEYは、[application.yml](https://github.com/kcg-edu-future-lab/madoi/blob/master/madoi-volatileserver/src/main/resources/application.yml)を参照してください。
+MadoiサーバのデフォルトのMADOI_API_KEYは、[docker-compose.yml](https://github.com/kcg-edu-future-lab/madoi/blob/master/docker-compose.yml)を参照してください。
 
 skyWayEnabledにtrueを設定し、skyWayAppIdとskyWaySecretを設定すれば、ビデオ会議機能が利用できます。
 事前に[SkyWay](https://skyway.ntt.com/ja/)でアカウントを作成し、AppIdとSecretを取得してください。
