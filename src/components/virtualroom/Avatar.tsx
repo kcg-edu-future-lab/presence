@@ -20,7 +20,10 @@ export function Avatar({gRef, avatar}: Props){
         <text textAnchor="middle" dominantBaseline="middle">{avatar.name}</text>
     </g>;
 }
-export function SelfAvatar({gRef, avatar}: Props){
+interface SelfAvatarProps extends Props{
+    onPositionChanged?: (position: [number, number])=>void;
+}
+export function SelfAvatar({gRef, avatar, onPositionChanged}: SelfAvatarProps){
     const gr = useRef<SVGGElement>(null!);
     if(!gRef) gRef = gr;
     const drag = useRef<DragState | null>(null);
@@ -40,6 +43,7 @@ export function SelfAvatar({gRef, avatar}: Props){
         if(drag.current === null) return;
         const {dx, dy} = drag.current.move(e.clientX, e.clientY);
         avatar.translate(dx, dy);
+        if(onPositionChanged) onPositionChanged(avatar.position);
         drag.current = null;
     }
     return <g ref={gRef} transform={`translate(${avatar.position[0]} ${avatar.position[1]})`}

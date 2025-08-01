@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef } from 'react';
 import { useSharedModel } from 'madoi-client-react';
 import './App.css';
 import { v4 as uuidv4 } from 'uuid';
@@ -28,14 +28,17 @@ import { MediaManager } from './util/media/MediaManager';
 import { AvatarReactionModel } from './components/virtualroom/model/AvatarReactionModel';
 
 const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
-const ls = new LocalJsonStorage<{id: string, name: string}>(roomId);
+const ls = new LocalJsonStorage<{id: string, name: string, position: [number, number]}>(roomId);
 export const AppContext = createContext({
     storage: ls, 
     madoi: new Madoi(
         `${madoiUrl}/${roomId}`,
         madoiKey, {
             id: ls.get("id", ()=>uuidv4()),
-            profile: {name: ls.get("name", "匿名")}
+            profile: {
+                name: ls.get("name", "匿名"),
+                position: ls.get("position", [Math.random() * 300, Math.random() * 300])
+            }
         }),
     asr: new ASREngine(true),
     mediaManager: skyWayEnabled ? new MediaManager(vbImagePath) : null,
@@ -46,8 +49,6 @@ export default function App(){
     const first = useRef(true);
     const app = useContext(AppContext);
     const madoi = app.madoi;
-    // ユーザ名は複数のコンポーネントで使用するのでstateで管理する。
-    const [selfName, setSelfName] = useState(()=>madoi.getSelfPeerProfile()["name"]);
 
     // VideoMeeting
     const mediaManager = app.mediaManager;
@@ -57,14 +58,17 @@ export default function App(){
 
     // VirtualRoom
     const vrom = useSharedModel(app.madoi, ()=>
-        new VirtualRoomOwnModel(roomId, selfName, [Math.random() * 300, Math.random() * 300]));
+        new VirtualRoomOwnModel());
     const vrm = useSharedModel(app.madoi, ()=>
-        new VirtualRoomModel(roomId, "defaultFloor_sd35.png"));
+        new VirtualRoomModel(roomId, "floor_sd35.png"));
     const arm = useSharedModel(app.madoi, ()=>new AvatarReactionModel());
-    const onVirtualRoomSelfNameChange = (name: string)=>{
-        setSelfName(name);
-        if(vmModel.selfPeer) vmModel.selfPeer.name = name;
+    const onVirtualRoomSelfNameChanged = (name: string)=>{
+        app.madoi.updateSelfPeerProfile("name", name);
         app.storage.set("name", name);
+    };
+    const onVirtualRoomSelfPositionChanged = (position: [number, number])=>{
+        app.madoi.updateSelfPeerProfile("position", position);
+        app.storage.set("position", position);
     };
 
     // MeetingChat
@@ -80,7 +84,7 @@ export default function App(){
 
     // Reaction buttons
     const onReactionTextClick: ClickListener = ({detail: {text}})=>{
-        arm.doReaction(vrom.selfPeer.id, text);
+        arm.doReaction(vrom.selfAvatar.id, text);
     };
 
     useEffect(()=>{
@@ -97,11 +101,13 @@ export default function App(){
             <VideoMeeting {...{model: vmModel, mediaManager, skyWay}} />
         </Grid>
         <Grid size={6}>
-            <VirtualRoom {...{vrm, vrom, arm, selfName, onSelfNameChange: onVirtualRoomSelfNameChange}} />
+            <VirtualRoom {...{vrm, vrom, arm,
+                onSelfNameChanged: onVirtualRoomSelfNameChanged,
+                onSelfPositionChanged: onVirtualRoomSelfPositionChanged}} />
         </Grid>
         <Grid size={6}>
             <CustomTabs labels={["チャット", "ボード1", "ボード2", "付箋ボード", "効果"]}>
-                <ASRChat {...{selfName, asr, chatLogs }} />
+                <ASRChat {...{asr, chatLogs }} />
                 <Whiteboard canvas={canvas1}/>
                 <Whiteboard canvas={canvas2}/>
                 <TagBoard tagBoardModel={tagBoardModel}/>
@@ -123,7 +129,7 @@ async function init(skyWay: SkyWay | undefined, vrom: VirtualRoomOwnModel){
     });
 
     window.addEventListener("JOYCON", (e: any) => {
-        const myAvatar = vrom.selfPeer;
+        const myAvatar = vrom.selfAvatar;
         if (!myAvatar) return;
         switch (e.data["button"]) {
             case "UP":
@@ -145,8 +151,8 @@ async function init(skyWay: SkyWay | undefined, vrom: VirtualRoomOwnModel){
 function adjustVolumes(
     vRoom: VirtualRoomOwnModel,
     vMeeting: VideoMeetingOwnModel) {
-    const self = vRoom.selfPeer;
-    vRoom.otherPeers.forEach(o => {
+    const self = vRoom.selfAvatar;
+    vRoom.otherAvatars.forEach(o => {
         const other = vMeeting.findOtherPeer(o.id);
         if(!other) return;
         const dist = Math.pow(self.position[0] - o.position[0], 2)

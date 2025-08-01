@@ -1,57 +1,26 @@
-import { LocalJsonStorage } from "../../../util/LocalJsonStorage";
-import { BeforeEnterRoom, EnterRoomAllowed, EnterRoomAllowedDetail, Madoi, PeerEntered, PeerEnteredDetail, PeerInfo, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ShareClass } from "madoi-client";
+import { EnterRoomAllowed, EnterRoomAllowedDetail, PeerEntered, PeerEnteredDetail, PeerInfo, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ShareClass } from "madoi-client";
 import { AvatarModel } from "./AvatarModel";
-import { TypedCustomEventTarget } from "tcet";
 
-export interface SelfNameChangedDetail{
-    name: string;
-}
-export interface SelfPositionChangedDetail{
-    position: [number, number];
-}
 @ShareClass({className: "VirtualRoomLocalModel"})
-export class VirtualRoomOwnModel extends TypedCustomEventTarget<VirtualRoomOwnModel, {
-    selfNameChanged: SelfNameChangedDetail,
-    selfPositionChanged: SelfPositionChangedDetail,
-}>{
-    private ls: LocalJsonStorage<{position: [number, number]}>;
+export class VirtualRoomOwnModel {
     private self: AvatarModel;
     private others: Map<string, AvatarModel> = new Map();
-    private madoi: Madoi | null = null;
 
-    constructor(roomId: string, selfName: string, private initialSelfPosition: [number, number]){
-        super();
-        this.ls = new LocalJsonStorage(roomId);
-        this.self = new AvatarModel("", selfName, 
-            this.ls.get("position", initialSelfPosition));
+    constructor(){
+        this.self = new AvatarModel("", "", [0, 0]);
     }
 
-    get selfPeer(){
+    get selfAvatar(){
         return this.self;
     }
 
-    get otherPeers(){
+    get otherAvatars(){
         return Array.from(this.others.values());
-    }
-
-    @BeforeEnterRoom()
-    protected beforeEnterRoom(selfPeerProfile: {[key: string]: any}, madoi: Madoi){
-        this.madoi = madoi;
-        selfPeerProfile["position"] = this.selfPeer.position;
     }
 
     @EnterRoomAllowed()
     protected enterRoomAllowed({selfPeer, otherPeers}: EnterRoomAllowedDetail){
         this.self = this.createAvatarFromPeer(selfPeer);
-        this.self.addEventListener("nameChanged", ({detail: {name}})=>{
-            this.madoi?.updateSelfPeerProfile("name", name);
-            this.dispatchCustomEvent("selfNameChanged", {name});
-        });
-        this.self.addEventListener("positionChanged", ({detail: {position}})=>{
-            this.ls.set("position", position);
-            this.madoi?.updateSelfPeerProfile("position", position);
-            this.dispatchCustomEvent("selfPositionChanged", {position});
-        });
         for(const p of otherPeers){
             this.others.set(p.id, this.createAvatarFromPeer(p));
         }
@@ -64,14 +33,13 @@ export class VirtualRoomOwnModel extends TypedCustomEventTarget<VirtualRoomOwnMo
 
     @PeerProfileUpdated()
     protected peerProfileUpdated({peerId, updates}: PeerProfileUpdatedDetail){
-        const peer = this.others.get(peerId);
-        if(!peer || !updates) return;
-        if(updates["name"]){
-            peer.name = updates["name"];
+        let avatar: AvatarModel | undefined = this.self;
+        if(this.self.id !== peerId){
+            avatar = this.others.get(peerId);
         }
-        if(updates["position"]){
-            peer.position = updates["position"];
-        }
+        if(!avatar || !updates) return;
+        if(updates["name"]) avatar.name = updates["name"];
+        else if(updates["position"]) avatar.position = updates["position"];
     }
 
     @PeerLeaved()

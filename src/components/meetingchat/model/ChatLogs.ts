@@ -1,4 +1,4 @@
-import { GetState, SetState, Share, ShareClass } from "madoi-client";
+import { EnterRoomAllowed, EnterRoomAllowedDetail, GetState, Madoi, PeerProfileUpdated, PeerProfileUpdatedDetail, SetState, Share, ShareClass } from "madoi-client";
 import { TypedCustomEventTarget } from "tcet";
 
 const ignoreWords = new Set<string>(["そう"]);
@@ -19,14 +19,35 @@ export interface LogAddedDetail{
 export class ChatLogs extends TypedCustomEventTarget<ChatLogs, {
     logAdded: LogAddedDetail
 }>{
+    private selfName: string = "匿名";
     private logs: Log[] = [];
 
     constructor(){
         super();
     }
 
-    add(senderName: string, language: string, message: string) {
-        this.addLog(senderName, language, message);
+    @EnterRoomAllowed()
+    protected enterRoomAllowed({selfPeer}: EnterRoomAllowedDetail, madoi: Madoi){
+        this.selfName = selfPeer.profile["name"] || "匿名";
+    }   
+
+    @PeerProfileUpdated()
+    protected peerProfileUpdated({peerId, updates}: PeerProfileUpdatedDetail, madoi: Madoi){
+        if(peerId === madoi.getSelfPeerId() && updates && updates["name"]){
+            this.selfName = updates["name"];
+        } 
+    }
+
+    addAsrResult(language: string, message: string) {
+        this.add(`${this.selfName}[音声認識]`, language, message);
+    }
+
+    addInputText(language: string, message: string) {
+        this.add(this.selfName, language, message);
+    }
+
+    private add(selfName: string, language: string, message: string) {
+        this.addLog(selfName, language, message);
     }
 
     @Share()

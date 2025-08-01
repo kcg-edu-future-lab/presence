@@ -5,18 +5,17 @@ import { Chat } from "./Chat";
 import { ASR } from "./ASR";
 
 interface Props{
-    selfName: string;
     asr: ASREngine;
     chatLogs: ChatLogs;
 }
-export function ASRChat({selfName, asr, chatLogs}: Props){
+export function ASRChat({asr, chatLogs}: Props){
     const onChat = (sentence: string)=>{
-        chatLogs.add(selfName, "ja", sentence);
+        chatLogs.addInputText("ja", sentence);
     }
     const onAsrResults: ASRResultListener = ({detail: {results}}) =>{
         const message = results.join("\n");
         if(message.length == results.length - 1) return;
-        chatLogs.add(`${selfName}[音声認識]`, asr.getLanguage(), message);
+        chatLogs.addAsrResult(asr.getLanguage(), message);
     };
 
     useEffect(()=>{

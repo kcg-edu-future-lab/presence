@@ -87,11 +87,15 @@ extends TypedCustomEventTarget<VideoMeetingOwnModel, {connected: ConnectedDetail
     @PeerProfileUpdated()
     protected peerProfileUpdated({peerId, updates}: PeerProfileUpdatedDetail){
         if(!updates) return;
-        const p = this._others.find(p=>p.madoiId===peerId);
+        let p: {name?: string, skyWayId?: string} | undefined = this._others.find(p=>p.madoiId===peerId);
+        if(!p && this._self?.madoiId === peerId){
+            p = this._self;
+        }
         if(!p) return;
         if(updates["name"]){
             p.name = updates["name"];
-        } else if(updates["skyWayPeerId"]){
+        }
+        if(p instanceof OtherPeerModel && updates["skyWayPeerId"]){
             p.skyWayId = updates["skyWayPeerId"];
             this.attachStreamIfPeerAvailable(p);
         }

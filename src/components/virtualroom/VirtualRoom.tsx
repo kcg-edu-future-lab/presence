@@ -1,4 +1,4 @@
-import { createRef, FormEvent, RefObject, useEffect, useRef, useState } from "react";
+import { createRef, FormEvent, RefObject, useEffect, useRef } from "react";
 import { Avatar, SelfAvatar } from "./Avatar";
 import { VirtualRoomModel } from "./model/VirtualRoomModel";
 import { VirtualRoomOwnModel } from "./model/VirtualRoomOwnModel";
@@ -11,24 +11,25 @@ interface Props{
     vrm: VirtualRoomModel;
     vrom: VirtualRoomOwnModel;
     arm?: AvatarReactionModel;
-    onSelfNameChange: (name: string)=>void;
+    onSelfNameChanged?: (name: string)=>void;
+    onSelfPositionChanged?: (position: [number, number])=>void;
 }
-export function VirtualRoom({vrm, vrom, arm, onSelfNameChange}: Props){
+export function VirtualRoom({vrm, vrom, arm, onSelfNameChanged, onSelfPositionChanged}: Props){
     const selfAvatarRef = useRef<SVGGElement>(null!);
     const othersAvatarRef = useRef<RefObject<SVGGElement | null>[]>([]);
     const nameInput = useRef<HTMLInputElement>(null!);
     const bgInput = useRef<HTMLInputElement>(null!);
-    const [name, setName] = useState(()=>vrom.selfPeer.name);
 
-    vrom.otherPeers.forEach(()=>othersAvatarRef.current.push(createRef<SVGGElement>()));
+    vrom.otherAvatars.forEach(()=>othersAvatarRef.current.push(createRef<SVGGElement>()));
 
-    const onNameChange = (e: FormEvent<HTMLFormElement>)=>{
+    const onNameChanged = (e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
         const name = nameInput.current.value.trim();
         if(!name || name === "") return;
-        vrom.selfPeer.name = name;
-        setName(name);
-        if(onSelfNameChange) onSelfNameChange(name);
+        if(onSelfNameChanged) onSelfNameChanged(name);
+    };
+    const onPositionChanged = (position: [number, number])=>{
+        if(onSelfPositionChanged) onSelfPositionChanged(position);
     };
     const onBackgroundChange = (e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
@@ -37,9 +38,9 @@ export function VirtualRoom({vrm, vrom, arm, onSelfNameChange}: Props){
         vrm.background = url;
     };
     const onAvatarReaction: AvatarReactionListener = ({detail: {avatarId, reaction}})=>{
-        let ag = avatarId === vrom.selfPeer.id ? selfAvatarRef.current : null;
+        let ag = avatarId === vrom.selfAvatar.id ? selfAvatarRef.current : null;
         if(ag === null){
-            const i = vrom.otherPeers.findIndex(o=>avatarId===o.id);
+            const i = vrom.otherAvatars.findIndex(o=>avatarId===o.id);
             if(i !== -1) ag = othersAvatarRef.current[i].current;
         }
         if(ag === null) return;
@@ -66,7 +67,7 @@ export function VirtualRoom({vrm, vrom, arm, onSelfNameChange}: Props){
 
     return <>
         <div>
-            <form onSubmit={onNameChange} style={{display: "inline-block"}}>
+            <form onSubmit={onNameChanged} style={{display: "inline-block"}}>
                 <Tooltip title="名前">
                         <TextField inputRef={nameInput}
                             variant="outlined" defaultValue={name} size="small"
@@ -91,9 +92,9 @@ export function VirtualRoom({vrm, vrom, arm, onSelfNameChange}: Props){
             backgroundImage: `url(${vrm.background})`,
             backgroundSize: "contain", backgroundPosition: "center"}}>
             {/* self */}
-            {<SelfAvatar gRef={selfAvatarRef} avatar={vrom.selfPeer} />}
+            {<SelfAvatar gRef={selfAvatarRef} avatar={vrom.selfAvatar} onPositionChanged={onPositionChanged} />}
             {/* peers */}
-            {vrom.otherPeers.map((p, i)=><Avatar gRef={othersAvatarRef.current[i]} key={p.id} avatar={p} />)}
+            {vrom.otherAvatars.map((a, i)=><Avatar gRef={othersAvatarRef.current[i]} key={a.id} avatar={a} />)}
         </svg>
     </>;
 }
