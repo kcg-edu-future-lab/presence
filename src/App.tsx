@@ -60,7 +60,7 @@ export default function App(){
     const vrom = useSharedModel(app.madoi, ()=>
         new VirtualRoomOwnModel());
     const vrm = useSharedModel(app.madoi, ()=>
-        new VirtualRoomModel(roomId, "floor_sd35.png"));
+        new VirtualRoomModel(roomId, "defaultFloor_sd35.png"));
     const arm = useSharedModel(app.madoi, ()=>new AvatarReactionModel());
     const onVirtualRoomSelfNameChanged = (name: string)=>{
         app.madoi.updateSelfPeerProfile("name", name);
