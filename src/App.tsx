@@ -86,6 +86,7 @@ export default function App(){
     const audioPlayer = useSharedModel(madoi, ()=>new AudioPlayer());
     const onReactionTextClick = (text: string)=>{
         arm.doReaction(vrom.selfAvatar.id, text);
+        chatLogs.addReaction(text);
     };
 
     useEffect(()=>{

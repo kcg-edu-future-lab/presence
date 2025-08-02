@@ -46,6 +46,10 @@ export class ChatLogs extends TypedCustomEventTarget<ChatLogs, {
         this.add(this.selfName, language, message);
     }
 
+    addReaction(text: string) {
+        this.addLog(`${this.selfName}[リアクション]`, "ja-JP", text);
+    }
+
     private add(selfName: string, language: string, message: string) {
         this.addLog(selfName, language, message);
     }
