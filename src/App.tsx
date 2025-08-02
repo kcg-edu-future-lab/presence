@@ -13,6 +13,7 @@ import { VideoMeetingOwnModel } from './components/videomeeting/model/VideoMeeti
 import { VideoMeeting } from './components/videomeeting/VideoMeeting';
 import { VirtualRoomModel } from './components/virtualroom/model/VirtualRoomModel';
 import { VirtualRoomOwnModel } from './components/virtualroom/model/VirtualRoomOwnModel';
+import { AvatarReactionModel } from './components/virtualroom/model/AvatarReactionModel';
 import { VirtualRoom } from './components/virtualroom/VirtualRoom';
 import { ASREngine } from './util/ASREngine';
 import { ChatLogs } from './components/meetingchat/model/ChatLogs';
@@ -21,11 +22,10 @@ import { DrawingCanvas } from './components/whiteboard/model/DrawingCanvas';
 import { Whiteboard } from './components/whiteboard/Whiteboard';
 import { TagBoard } from './components/tagboard/TagBoard';
 import { TagBoardModel } from './components/tagboard/model/TagBoardModel';
-import { ClickListener } from './components/common/model/ClickableText';
+import { AudioPlayer } from './components/common/model/AudioPlayer';
 import { ReactionButtons } from './components/reaction/ReactionButtons';
 import { madoiUrl, madoiKey, skyWayEnabled, skyWayTokenUrl } from './keys';
 import { MediaManager } from './util/media/MediaManager';
-import { AvatarReactionModel } from './components/virtualroom/model/AvatarReactionModel';
 
 const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
 const ls = new LocalJsonStorage<{id: string, name: string, position: [number, number]}>(roomId);
@@ -83,7 +83,8 @@ export default function App(){
     const tagBoardModel = useSharedModel(madoi, ()=>new TagBoardModel());
 
     // Reaction buttons
-    const onReactionTextClick: ClickListener = ({detail: {text}})=>{
+    const audioPlayer = useSharedModel(madoi, ()=>new AudioPlayer());
+    const onReactionTextClick = (text: string)=>{
         arm.doReaction(vrom.selfAvatar.id, text);
     };
 
@@ -111,7 +112,7 @@ export default function App(){
                 <Whiteboard canvas={canvas1}/>
                 <Whiteboard canvas={canvas2}/>
                 <TagBoard tagBoardModel={tagBoardModel}/>
-                <ReactionButtons madoi={madoi} onTextClick={onReactionTextClick}/>
+                <ReactionButtons audioPlayer={audioPlayer} onTextClick={onReactionTextClick}/>
             </CustomTabs>
         </Grid>
     </Grid>;

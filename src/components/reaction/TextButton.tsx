@@ -1,24 +1,13 @@
-import { PropsWithChildren, useEffect } from "react";
-import { Madoi } from "madoi-client";
-import { useSharedModel } from "madoi-client-react";
-import { ClickeableText, ClickListener } from "../common/model/ClickableText";
+import { PropsWithChildren } from "react";
 
 interface Props extends PropsWithChildren{
-    madoi: Madoi;
-    onClick?: ClickListener;
+    onClick?: (text: string)=>void;
 }
-export function TextButton({madoi, onClick, children}: Props){
-    const ct = useSharedModel(madoi, ()=>new ClickeableText());
+export function TextButton({onClick, children}: Props){
     const text = children?.toString();
     const onButtonClick = ()=>{
-        if(text) ct.click(text);
+        if(onClick) onClick(text || "");
     };
-    useEffect(()=>{
-        if(onClick) ct.addEventListener("click", onClick);
-        return ()=>{
-            if(onClick) ct.removeEventListener("click", onClick);
-        };
-    }, []);
     return <button onClick={onButtonClick}
         type="button" className="btn btn-light" style={{borderRadius: "4px"}}>
         {children}

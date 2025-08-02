@@ -4,13 +4,14 @@ import { Notify, ShareClass } from "madoi-client";
 export class AudioPlayer {
     private audio: HTMLAudioElement;
 
-    constructor(src: string, volume: number){
-        this.audio = new Audio(src);
-        this.audio.volume = volume;
+    constructor(){
+        this.audio = new Audio();
     }
 
     @Notify()
-    play(){
+    play(src: string, volume: number) {
+        this.audio.src = src;
+        this.audio.volume = volume;
         this.audio.play();
     }
 }

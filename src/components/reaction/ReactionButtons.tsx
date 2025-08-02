@@ -1,6 +1,6 @@
-import { Madoi } from 'madoi-client';
-import { ClickListener } from '../common/model/ClickableText';
+import { AudioPlayer } from '../common/model/AudioPlayer';
 import { TextButton } from './TextButton';
+import { AudioButton } from './AudioButton';
 import { AudioTextButton } from './AudioTextButton';
 import "./ReactionButtons.css";
 import se1 from "/src/assets/グラスを合わせる.mp3";
@@ -19,44 +19,52 @@ import se13 from "/src/assets/木魚ポク・ポク・ポク.mp3";
 import se14 from "/src/assets/チーン1.mp3";
 
 interface Props{
-    madoi: Madoi;
-    onTextClick?: ClickListener;
+    audioPlayer: AudioPlayer;
+    onTextClick?: (text: string)=> void;
 }
-export function ReactionButtons({madoi, onTextClick}: Props){
+export function ReactionButtons({audioPlayer, onTextClick}: Props){
+    const onAudioTextClick = (src: string, volume: number, text?: string)=>{
+        audioPlayer.play(src, volume);
+        if(onTextClick && text) onTextClick(text);
+    };
+    const onAudioClick = (src: string, volume: number)=>{
+        audioPlayer.play(src, volume);
+    };
     return <>
         <span><small>効果音あり</small></span><br/>
-        <AudioTextButton madoi={madoi} src={se1} volume={0.7} onClick={onTextClick}>🍺</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se2} volume={0.7} onClick={onTextClick}>👏</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se3} volume={0.7} onClick={onTextClick}>👏😄</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se4} volume={0.7} onClick={onTextClick}>🥁</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se5} volume={0.7} onClick={onTextClick}>🎉</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se6} volume={0.7} onClick={onTextClick}>🤪</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se7} volume={0.7} onClick={onTextClick}>👍</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se8} volume={0.7} onClick={onTextClick}>💰</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se9} volume={0.7} onClick={onTextClick}>😨</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se10} volume={0.7} onClick={onTextClick}>🔔</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se11} volume={0.7} onClick={onTextClick}>🦵💦</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se12} volume={0.7} onClick={onTextClick}>🙏</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se13} volume={0.7} onClick={onTextClick}>ポク・ポク・ポク</AudioTextButton>
-        <AudioTextButton madoi={madoi} src={se14} volume={0.7} onClick={onTextClick}>チーン</AudioTextButton>
-        <br/><br/>
+        <AudioTextButton src={se1} volume={0.7} onClick={onAudioTextClick}>🍺</AudioTextButton>
+        <AudioTextButton src={se2} volume={0.7} onClick={onAudioTextClick}>👏</AudioTextButton>
+        <AudioTextButton src={se3} volume={0.7} onClick={onAudioTextClick}>👏😄</AudioTextButton>
+        <AudioTextButton src={se4} volume={0.7} onClick={onAudioTextClick}>🥁</AudioTextButton>
+        <AudioTextButton src={se5} volume={0.7} onClick={onAudioTextClick}>🎉</AudioTextButton>
+        <AudioTextButton src={se6} volume={0.7} onClick={onAudioTextClick}>🤪</AudioTextButton>
+        <AudioTextButton src={se7} volume={0.7} onClick={onAudioTextClick}>👍</AudioTextButton>
+        <AudioTextButton src={se8} volume={0.7} onClick={onAudioTextClick}>💰</AudioTextButton>
+        <AudioTextButton src={se9} volume={0.7} onClick={onAudioTextClick}>😨</AudioTextButton>
+        <AudioTextButton src={se10} volume={0.7} onClick={onAudioTextClick}>🔔</AudioTextButton>
+        <AudioTextButton src={se11} volume={0.7} onClick={onAudioTextClick}>🦵💦</AudioTextButton>
+        <AudioTextButton src={se12} volume={0.7} onClick={onAudioTextClick}>🙏</AudioTextButton>
+        <AudioTextButton src={se13} volume={0.7} onClick={onAudioTextClick}>ポク・ポク・ポク</AudioTextButton>
+        <AudioTextButton src={se14} volume={0.7} onClick={onAudioTextClick}>チーン</AudioTextButton>
+        <AudioButton src="media/8dc9afe8adb3406e80094ae474434b38.mp3" volume={0.7} onClick={onAudioClick}>6LDK</AudioButton>
+        <AudioButton src="media/drif.mp3" volume={0.2} onClick={onAudioClick}>ドリフ</AudioButton>
+        <br/>
         <span><small>効果音なし</small></span><br/>
-        <TextButton madoi={madoi} onClick={onTextClick}>🙂</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>👏</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😄</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😁</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😅</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤣</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🫠</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😇</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😍</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤩</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤪</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤗</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤔</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤐</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>😴</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤢</TextButton>
-        <TextButton madoi={madoi} onClick={onTextClick}>🤮</TextButton>
+        <TextButton onClick={onTextClick}>🙂</TextButton>
+        <TextButton onClick={onTextClick}>😄</TextButton>
+        <TextButton onClick={onTextClick}>😁</TextButton>
+        <TextButton onClick={onTextClick}>😅</TextButton>
+        <TextButton onClick={onTextClick}>🤣</TextButton>
+        <TextButton onClick={onTextClick}>🫠</TextButton>
+        <TextButton onClick={onTextClick}>😇</TextButton>
+        <TextButton onClick={onTextClick}>😍</TextButton>
+        <TextButton onClick={onTextClick}>🤩</TextButton>
+        <TextButton onClick={onTextClick}>🤪</TextButton>
+        <TextButton onClick={onTextClick}>🤗</TextButton>
+        <TextButton onClick={onTextClick}>🤔</TextButton>
+        <TextButton onClick={onTextClick}>🤐</TextButton>
+        <TextButton onClick={onTextClick}>😴</TextButton>
+        <TextButton onClick={onTextClick}>🤢</TextButton>
+        <TextButton onClick={onTextClick}>🤮</TextButton>
     </>;
 }
