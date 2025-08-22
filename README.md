@@ -68,7 +68,7 @@ SKYWAY_SECRET=YOUR_SKYWAY_SECRET
 `docker compose up`を実行すると、Madoiのビルドが行われ、volatileserverが起動します。
 
 
-## Presenceの設定
+## Presenceのcloneと設定変更
 
 まず、このリポジトリをcloneしてください。
 
@@ -96,7 +96,7 @@ MadoiサーバのデフォルトのMADOI_API_KEYは、[docker-compose.yml](https
 
 `skyWayEnabled`にtrueを設定し、`skyWayTokenUrl`にmadoi-volatileserverのSkyWayトークン発行URLを設定すれば、ビデオ会議機能が利用できます。もしくは、`skyWayAppId`と`skyWaySecret`に[SkyWay](https://skyway.ntt.com/ja/)から取得したアプリケーションIDとシークレットを設定すれば、`skyWayTokenUrl`は空文字列で構いません。ただしこの場合、SKyWayのIDとシークレットがブラウザに読み込まれるため、開発用や関係者内での利用に限定することをお勧めします。
 
-# Presenceの起動(docker-compose)
+## Presenceの起動
 
 次に以下のコマンドを実行すると、コンテナ内でPresenceが起動します。
 このコマンドは、Node.jsのバージョン22のイメージ(node:22)を使用して、Presenceを開発モードで起動(`npm run dev`)するものです。
