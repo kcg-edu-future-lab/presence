@@ -48,3 +48,16 @@ export function downloadCanvasImageByAnchorTag(
     a.setAttribute("download", filename);
     a.dispatchEvent(new MouseEvent("click"));
 }
+
+export function toBase64(u8a: Uint8Array){
+    return u8a.reduce(
+        (ret, b) => ret + String.fromCharCode(b),
+        '',);
+}
+
+export function fromBase64(b64: string){
+    return Uint8Array.from(
+        b64,
+        c => c.charCodeAt(0),
+    );
+}

@@ -26,8 +26,10 @@ import { AudioPlayer } from './components/common/model/AudioPlayer';
 import { ReactionButtons } from './components/reaction/ReactionButtons';
 import { madoiUrl, madoiKey, skyWayEnabled, skyWayTokenUrl } from './keys';
 import { MediaManager } from './util/media/MediaManager';
+import { YjsDocument } from './components/common/model/YjsDocument';
+import { Mermaid } from './components/mermaid/Mermaid';
 
-const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsfs24df2sdfsfjo4`;
+const roomId: string = `sample-madoi-presence-${getLastPath(window.location.href)}-sdsdffs24df2sdfsfjo4`;
 const ls = new LocalJsonStorage<{id: string, name: string, position: [number, number]}>(roomId);
 export const AppContext = createContext({
     storage: ls, 
@@ -82,6 +84,9 @@ export default function App(){
     // TagBoard
     const tagBoardModel = useSharedModel(madoi, ()=>new TagBoardModel());
 
+    // Mermaid
+    const ydoc = useSharedModel(madoi, ()=>new YjsDocument(madoi));
+
     // Reaction buttons
     const audioPlayer = useSharedModel(madoi, ()=>new AudioPlayer());
     const onReactionTextClick = (text: string)=>{
@@ -108,11 +113,12 @@ export default function App(){
                 onSelfPositionChanged: onVirtualRoomSelfPositionChanged}} />
         </Grid>
         <Grid size={6}>
-            <CustomTabs labels={["チャット", "ボード1", "ボード2", "付箋ボード", "効果"]}>
+            <CustomTabs labels={["チャット", "ボード1", "ボード2", "付箋ボード", "Mermaid", "効果"]}>
                 <ASRChat {...{asr, chatLogs }} />
                 <Whiteboard canvas={canvas1}/>
                 <Whiteboard canvas={canvas2}/>
                 <TagBoard tagBoardModel={tagBoardModel}/>
+                <Mermaid ydoc={ydoc}/>
                 <ReactionButtons audioPlayer={audioPlayer} onTextClick={onReactionTextClick}/>
             </CustomTabs>
         </Grid>

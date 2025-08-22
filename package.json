@@ -17,16 +17,20 @@
     "@mui/material": "^7.2.0",
     "@skyway-sdk/core": "^1.12.0",
     "@skyway-sdk/room": "^1.12.0",
-    "madoi-client": "^0.1.5",
+    "codemirror": "^6.0.2",
+    "madoi-client": "^0.2.2",
     "madoi-client-react": "^0.1.5",
+    "mermaid": "^11.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
     "tcet": "^1.0.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "y-codemirror.next": "^0.3.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/codemirror": "^5.60.16",
     "@types/dom-speech-recognition": "^0.0.6",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
