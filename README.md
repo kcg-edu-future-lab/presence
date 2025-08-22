@@ -49,13 +49,23 @@ Chromeでの動作確認を行なっています。
 
 適当なディレクトリで以下のコマンドを実行し、Madoi の madoi-volatileserver を起動してください。詳細は、[MadoiのREADME](https://github.com/kcg-edu-future-lab/madoi)を参照してください。
 
+
 ```bash
 git clone https://github.com/kcg-edu-future-lab/madoi
 cd madoi
 docker compose up
 ```
 
-上記のコマンドを実行すると、Madoiのビルドが行われ、volatileserverが起動します。
+SkyWayToken発行機能を利用する(ビデオ会議機能を利用しSkyWayのトークンをmadoi-volatileserverに発行させる)場合は、
+`docker compose up`を実行する前に、madoiディレクトリ内の `.env.default` ファイルをコピーして `env.default`
+を作成し、アプリケーションIDとシークレットを変更してください(事前に[SkyWay](https://skyway.ntt.com/ja/)でアカウントを作成し、AppIdとSecretを取得してください)。
+
+```.env
+SKYWAY_APP_ID=YOUR_SKYWAY_APP_ID
+SKYWAY_SECRET=YOUR_SKYWAY_SECRET
+```
+
+`docker compose up`を実行すると、Madoiのビルドが行われ、volatileserverが起動します。
 
 
 ## Presenceの設定
@@ -79,12 +89,12 @@ export const madoiKey = "MADOI_API_KEY";
 export const skyWayEnabled = false;
 export const skyWayAppId = "SKYWAY_APP_ID";
 export const skyWaySecret = "SKYWAY_SECRET";
+export const skyWayTokenUrl = "ws://localhost:8080/madoi/skyWayToken?authToken=" + madoiKey;
 ```
 
 MadoiサーバのデフォルトのMADOI_API_KEYは、[docker-compose.yml](https://github.com/kcg-edu-future-lab/madoi/blob/master/docker-compose.yml)を参照してください。
 
-skyWayEnabledにtrueを設定し、skyWayAppIdとskyWaySecretを設定すれば、ビデオ会議機能が利用できます。
-事前に[SkyWay](https://skyway.ntt.com/ja/)でアカウントを作成し、AppIdとSecretを取得してください。
+`skyWayEnabled`にtrueを設定し、`skyWayTokenUrl`にmadoi-volatileserverのSkyWayトークン発行URLを設定すれば、ビデオ会議機能が利用できます。もしくは、`skyWayAppId`と`skyWaySecret`に[SkyWay](https://skyway.ntt.com/ja/)から取得したアプリケーションIDとシークレットを設定すれば、`skyWayTokenUrl`は空文字列で構いません。ただしこの場合、SKyWayのIDとシークレットがブラウザに読み込まれるため、開発用や関係者内での利用に限定することをお勧めします。
 
 # Presenceの起動(docker-compose)
 
@@ -101,7 +111,7 @@ node.jsをローカル環境にセットアップすれば、ローカルでの�
 Webサーバに配備する場合は、madoi-volatileserverもサーバに配備し、そのURLとキーを `keys.ts` に設定して静的ビルドを行い、distディレクトリ内のビルド結果をWebサーバに配置してください。
 
 
-## References
+# References
 
 - 中口孝雄, "リアルタイムコラボレーションツールのためのオブジェクト共有サービス," 電子情報通信学会技術研究報告; 信学技報, 120(232) pp.70-73, 2020. 
 - 中口孝雄, "分散共有機能のサービス化に向けたプログラミングモデルの設計と実装," 電子情報通信学会技術研究報告; 信学技報, 121(157), pp.64-68, 2021.
