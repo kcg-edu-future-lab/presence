@@ -39,13 +39,9 @@ ReactとTypeScriptを使用して開発されています。
 
 Chromeでの動作確認を行なっています。
 
-ローカルで起動(以下、`Presenceの起動`参照)するには、docker compose 又は Node.js が必要です。静的ビルドにも対応しており、
-distディレクトリに生成されたファイル群をWebサーバに設置しても構いません。
+静的ビルドに対応しているため、ビルド結果をWebサーバに設置してChromeでアクセスすれば利用できます。
 
-Node.jsでの起動又はビルドには、以下のツールやソフトウェアが必要です。
-
-- VSCode(他の開発環境でも構いません)
-- Node.js v22以上
+動作にはMadoiサーバが必要です。ローカルで一式起動(以下、`Presenceの起動`参照)するには、docker compose 又は Node.js が必要です。
 
 # 実行方法
 
@@ -62,7 +58,7 @@ docker compose up
 上記のコマンドを実行すると、Madoiのビルドが行われ、volatileserverが起動します。
 
 
-## Presenceの起動
+## Presenceの設定
 
 まず、このリポジトリをcloneしてください。
 
@@ -90,7 +86,10 @@ MadoiサーバのデフォルトのMADOI_API_KEYは、[docker-compose.yml](https
 skyWayEnabledにtrueを設定し、skyWayAppIdとskyWaySecretを設定すれば、ビデオ会議機能が利用できます。
 事前に[SkyWay](https://skyway.ntt.com/ja/)でアカウントを作成し、AppIdとSecretを取得してください。
 
-次に以下のコマンドを実行し、presenceを起動してください。
+# Presenceの起動(docker-compose)
+
+次に以下のコマンドを実行すると、コンテナ内でPresenceが起動します。
+このコマンドは、Node.jsのバージョン22のイメージ(node:22)を使用して、Presenceを開発モードで起動(`npm run dev`)するものです。
 
 ```bash
 docker compose up
@@ -98,8 +97,8 @@ docker compose up
 
 起動後、http://localhost:5137/ にアクセスすると、Presenceをブラウザで利用できます(ポートを変更するには、vite.config.ts.dockerファイルを編集してください)。
 
-このコマンドは、Node.jsのバージョン22のイメージ(node:22)を使用して、Presenceをビルドし開発モードで起動(`npm run dev`)するものです。
-開発環境をセットアップし、静的ビルドを行なえば、Webサーバに配備することも可能です。
+node.jsをローカル環境にセットアップすれば、ローカルでの開発モード起動(`npm run dev`)や静的ビルド(`npm run build`)も可能です。
+Webサーバに配備する場合は、madoi-volatileserverもサーバに配備し、そのURLとキーを `keys.ts` に設定して静的ビルドを行い、distディレクトリ内のビルド結果をWebサーバに配置してください。
 
 
 ## References
@@ -108,4 +107,4 @@ docker compose up
 - 中口孝雄, "分散共有機能のサービス化に向けたプログラミングモデルの設計と実装," 電子情報通信学会技術研究報告; 信学技報, 121(157), pp.64-68, 2021.
 - 中口孝雄, 秋山功, 三浦仁, 前納一希, 橋本昇, "ウィズコロナ時代のコミュニケーションツールに関する考察と試み," NAIS journal, vol.17, pp.15-20, 2023.
 - 中口孝雄, 秋山功, 三浦仁, 前納一希, 橋本昇, 江尻秀彰, "生成 AI を活用するコミュニケーションツールの実現に向けた考察と試み," NAIS journal, vol.18, pp.42-47, 2024.
-- (発表予定) 中口孝雄, "分散情報共有サービスMadoiを用いたコラボレーションツールの宣言的プログラミング ," 情報処理学会研究報告, 2025.
+- 中口孝雄, "分散情報共有サービスMadoiを用いたコラボレーションツールの宣言的プログラミング ," 電子情報通信学会技術研究報告, 2025.
