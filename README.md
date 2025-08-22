@@ -11,24 +11,29 @@ ReactとTypeScriptを使用して開発されています。
 
 以下の機能が実装されています。
 
-- ビデオ会議(画面上部)
+- ビデオ会議(画面上部) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/videomeeting/VideoMeeting.tsx)
   - `keys.ts` の `skyWayEnabled` を `true` にし、SkyWayのIDとシークレットを設定すれば、ビデオ会議機能が有効になります。カメラや画面共有、マイクの共有には[SkyWay](https://skyway.ntt.com/ja/)を使用しています。仮想背景の実装にはGoogleの[mediapipe](https://ai.google.dev/edge/mediapipe/solutions/guide?hl=ja)を利用しています。
   - 利用者の入退室管理にMadoiを使用しています。
-- 仮想オフィス(画面左下)
+- 仮想オフィス(画面左下) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/virtualroom/VirtualRoom.tsx)
   - 背景画像上に利用者を表すアバター(円に名前が描画されたもの)が描画されます。アバター同士が近ければ声が聞こえ、遠くなると声が小さくなります。
   - アバターの位置の共有にMadoiを使用しています。
-- チャット(画面右下のツールの一つ)
+- チャット(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/meetingchat/Chat.tsx)
   - 音声認識を備えたシンプルなチャットです。
   - 円の位置の共有にMadoiを使用しています。
-- ホワイトボード(画面右下のツールの一つ)
+- ホワイトボード(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/whiteboard/Whiteboard.tsx)
   - シンプルな描画ツールです。
   - 描画内容の共有にMadoiを使用しています。
-- 付箋ボード(画面右下のツールの一つ)
+- 付箋ボード(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/tagboard/TagBoard.tsx)
   - 付箋を貼り付けられる共有ボードです。
   - 付箋の位置や描画内容の共有にMadoiを使用しています。
-- 効果(画面右下のツールの一つ)
+- mermaid文書の共同編集(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/mermaid/Mermaid.tsx)
+  - [Yjs](https://github.com/yjs/yjs), [CodeMirror](https://codemirror.net/)を使用した [mermaid](https://mermaid.js.org/)ドキュメントの共同編集機能です。
+  - YjsはUIのみで使用し、差分の共有にはMadoiを使用しています。
+- 効果(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/reaction/ReactionButtons.tsx)
   - 画面効果や効果音の再生を行います。
   - 効果の共有にMadoiを使用しています。
+  - ※ 効果音は[効果音ラボ](https://soundeffect-lab.info/)のものを使用しています。
+
 
 # 動作環境
 
