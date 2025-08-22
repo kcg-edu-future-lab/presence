@@ -46,8 +46,6 @@ export function ReactionButtons({audioPlayer, onTextClick}: Props){
         <AudioTextButton src={se12} volume={0.7} onClick={onAudioTextClick}>🙏</AudioTextButton>
         <AudioTextButton src={se13} volume={0.7} onClick={onAudioTextClick}>ポク・ポク・ポク</AudioTextButton>
         <AudioTextButton src={se14} volume={0.7} onClick={onAudioTextClick}>チーン</AudioTextButton>
-        <AudioButton src="media/8dc9afe8adb3406e80094ae474434b38.mp3" volume={0.7} onClick={onAudioClick}>6LDK</AudioButton>
-        <AudioButton src="media/drif.mp3" volume={0.2} onClick={onAudioClick}>ドリフ</AudioButton>
         <br/>
         <span><small>効果音なし</small></span><br/>
         <TextButton onClick={onTextClick}>🙂</TextButton>
