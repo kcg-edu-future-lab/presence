@@ -57,7 +57,7 @@ docker compose up
 ```
 
 SkyWayToken発行機能を利用する(ビデオ会議機能を利用しSkyWayのトークンをmadoi-volatileserverに発行させる)場合は、
-`docker compose up`を実行する前に、madoiディレクトリ内の `.env.default` ファイルをコピーして `env`
+`docker compose up`を実行する前に、madoiディレクトリ内の `.env.default` ファイルをコピーして `.env`
 ファイルを作成し、アプリケーションIDとシークレットを変更してください(事前に[SkyWay](https://skyway.ntt.com/ja/)でアカウントを作成し、AppIdとSecretを取得してください)。
 
 ```.env
