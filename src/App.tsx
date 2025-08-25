@@ -85,7 +85,7 @@ export default function App(){
     const tagBoardModel = useSharedModel(madoi, ()=>new TagBoardModel());
 
     // Mermaid
-    const ydoc = useSharedModel(madoi, ()=>new YjsDocument(madoi));
+    const ydoc = useSharedModel(madoi, ()=>new YjsDocument(madoi), false);
 
     // Reaction buttons
     const audioPlayer = useSharedModel(madoi, ()=>new AudioPlayer());
