@@ -28,7 +28,7 @@ ReactとTypeScriptを使用して開発されています。
   - 付箋の位置や描画内容の共有に[Madoi](https://github.com/kcg-edu-future-lab/madoi)を使用しています。
 - mermaid文書の共同編集(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/mermaid/Mermaid.tsx)
   - [Yjs](https://github.com/yjs/yjs), [CodeMirror](https://codemirror.net/)を使用した [mermaid](https://mermaid.js.org/)ドキュメントの共同編集機能です。
-  - YjsはUIのみで使用し、差分の共有には[Madoi](https://github.com/kcg-edu-future-lab/madoi)を使用しています。
+  - YjsはUIのみで使用し、差分の共有には[Madoi](https://github.com/kcg-edu-future-lab/madoi)を使用しています。y-websocketを参考に通信部分をMadoiに移植し、awareness(他の人のカーソルの表示)にも対応しています。
 - 効果(画面右下のツールの一つ) [ソース](https://github.com/kcg-edu-future-lab/presence/blob/main/src/components/reaction/ReactionButtons.tsx)
   - 画面効果や効果音の再生を行います。
   - 効果の共有に[Madoi](https://github.com/kcg-edu-future-lab/madoi)を使用しています。
