@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { GetState, SetState, Madoi, Share, ShareClass, EnterRoomAllowed, EnterRoomAllowedDetail } from "madoi-client";
+import { GetState, SetState, Madoi, Share, ShareClass, EnterRoomAllowed, EnterRoomAllowedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail } from "madoi-client";
 import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 import { fromBase64, toBase64 } from '../../../util/Util';
 import { MadoiAwarenessAdapter } from '../../../util/madoi-y-awareness';
@@ -36,7 +36,12 @@ export class YjsDocument extends TypedCustomEventTarget<YjsDocument, YjsDocument
 
     @EnterRoomAllowed()
     protected enterRoomAllowed(detail: EnterRoomAllowedDetail, madoi: Madoi){
-      this.madoiAwareness.onEnterRoomAllowed(detail, madoi);
+        this.madoiAwareness.onEnterRoomAllowed(detail, madoi);
+    }
+
+    @PeerProfileUpdated()
+    protected peerProfileUpdated(detail: PeerProfileUpdatedDetail, madoi: Madoi){
+        this.madoiAwareness.onPeerProfileUpdated(detail, madoi);
     }
 
     // メソッド実行後に他のピアに共有メッセージを送る。

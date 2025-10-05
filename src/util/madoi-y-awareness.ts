@@ -4,7 +4,7 @@ import * as syncProtocol from 'y-protocols/sync';
 import * as awarenessProtocol from 'y-protocols/awareness';
 import * as encoding from 'lib0/encoding'
 import * as decoding from 'lib0/decoding'
-import { EnterRoomAllowedDetail, Madoi } from 'madoi-client';
+import { EnterRoomAllowedDetail, Madoi, PeerProfileUpdatedDetail } from 'madoi-client';
 import { fromBase64, toBase64 } from './Util';
 
 const messageSync = 0
@@ -14,12 +14,12 @@ const messageAuth = 2
 
 export class MadoiAwarenessAdapter{
     private _doc: Y.Doc;
-    private _awareness: any;
+    private _awareness: awarenessProtocol.Awareness;
     private _awarenessSynced = false;
 
     constructor(madoi: Madoi, doc: Y.Doc){
         this._doc = doc;
-        this.awareness = new awarenessProtocol.Awareness(doc);
+        this._awareness = new awarenessProtocol.Awareness(doc);
         this.awareness.on('update', ({ added, updated, removed }: any, _origin: any) => {
             const changedClients = added.concat(updated).concat(removed)
             const encoder = encoding.createEncoder()
@@ -31,10 +31,19 @@ export class MadoiAwarenessAdapter{
             madoi.othercast("awareness", toBase64(encoding.toUint8Array(encoder)));
         });
         madoi.addReceiver("awareness", ({detail: {content}})=>{
-          const encoder = readMessage(this, new Uint8Array(fromBase64(content as string)), true)
-          if (encoding.length(encoder) > 1) {
-            madoi.othercast("awareness", toBase64(encoding.toUint8Array(encoder)));
-          }
+            const encoder = readMessage(this, new Uint8Array(fromBase64(content as string)), true)
+            if (encoding.length(encoder) > 1) {
+                madoi.othercast("awareness", toBase64(encoding.toUint8Array(encoder)));
+            }
+            console.log("clients", Array.from(this.awareness.getStates().keys()).length);
+        });
+        window.addEventListener("beforeunload", ()=>{
+            this.awarenessSynced = false
+            awarenessProtocol.removeAwarenessStates(
+                this.awareness,
+                [this.doc.clientID],
+                this
+            )
         });
     }
 
@@ -66,6 +75,9 @@ export class MadoiAwarenessAdapter{
         madoi.othercast("awareness", toBase64(encoding.toUint8Array(encoder)))
         // broadcast local awareness state
         if (this.awareness.getLocalState() !== null) {
+            this.awareness.setLocalStateField('user', {
+                name: detail.selfPeer.profile["name"]
+            });
             const encoderAwarenessState = encoding.createEncoder()
             encoding.writeVarUint(encoderAwarenessState, messageAwareness)
             encoding.writeVarUint8Array(
@@ -75,6 +87,14 @@ export class MadoiAwarenessAdapter{
               ])
             )
             madoi.othercast("awareness", toBase64(encoding.toUint8Array(encoderAwarenessState)))
+        }
+    }
+
+    onPeerProfileUpdated(detail: PeerProfileUpdatedDetail, madoi: Madoi){
+        if(detail.peerId === madoi.getSelfPeerId() && detail.updates && detail.updates["name"] !== undefined){
+            this.awareness.setLocalStateField('user', {
+                name: detail.updates["name"]
+            });
         }
     }
 }
