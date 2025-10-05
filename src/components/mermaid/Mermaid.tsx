@@ -21,7 +21,7 @@ export function Mermaid({ydoc}: Props){
         const yt = ydoc.getYDoc().getText("mermaid");
         new EditorView({
             state: EditorState.create({
-                extensions: [basicSetup, yCollab(yt, null)]
+                extensions: [basicSetup, yCollab(yt, ydoc.awareness)]
             }),
             parent: editorRef.current
         });
