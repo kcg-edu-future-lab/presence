@@ -1,7 +1,7 @@
-import { EnterRoomAllowed, EnterRoomAllowedDetail, PeerEntered, PeerEnteredDetail, PeerInfo, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ShareClass } from "madoi-client";
+import { ClassName, EnterRoomAllowed, EnterRoomAllowedDetail, PeerEntered, PeerEnteredDetail, PeerInfo, PeerLeaved, PeerLeavedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail } from "madoi-client";
 import { AvatarModel } from "./AvatarModel";
 
-@ShareClass({className: "VirtualRoomLocalModel"})
+@ClassName("VirtualRoomLocalModel")
 export class VirtualRoomOwnModel {
     private self: AvatarModel;
     private others: Map<string, AvatarModel> = new Map();

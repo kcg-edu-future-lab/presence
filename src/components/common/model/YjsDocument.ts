@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { GetState, SetState, Madoi, Share, ShareClass, EnterRoomAllowed, EnterRoomAllowedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail } from "madoi-client";
+import { GetState, SetState, Madoi, EnterRoomAllowed, EnterRoomAllowedDetail, PeerProfileUpdated, PeerProfileUpdatedDetail, ClassName, Distributed, ChangeState } from "madoi-client";
 import { TypedCustomEventListenerOrObject, TypedCustomEventTarget } from "tcet";
 import { fromBase64, toBase64 } from '../../../util/Util';
 import { MadoiAwarenessAdapter } from '../../../util/madoi-y-awareness';
@@ -8,7 +8,7 @@ interface YjsDocumentEvents{
     updated: void;
 }
 export type DocumentChangedListener = TypedCustomEventListenerOrObject<YjsDocument, void>;
-@ShareClass({className: "YjsDocument"})
+@ClassName("YjsDocument")
 export class YjsDocument extends TypedCustomEventTarget<YjsDocument, YjsDocumentEvents>{
     private ydoc: Y.Doc;
     private madoiAwareness: MadoiAwarenessAdapter;
@@ -45,7 +45,8 @@ export class YjsDocument extends TypedCustomEventTarget<YjsDocument, YjsDocument
     }
 
     // メソッド実行後に他のピアに共有メッセージを送る。
-    @Share({type: "afterExec"})
+    @Distributed({serialized: false})
+    @ChangeState()
     private applyUpdate(update: string){
         // メッセージの処理中(=他のピアからのメッセージによるメソッド実行)であればydocへ反映する。
         // ydocデータへの他の変更の場合(codemirrorのUIからの変更を想定)はupdatedイベント発行のみ。

@@ -1,6 +1,6 @@
-import { Notify, ShareClass } from "madoi-client";
+import { ClassName, Distributed,  } from "madoi-client";
 
-@ShareClass({className: "AudioPlayer"})
+@ClassName("AudioPlayer")
 export class AudioPlayer {
     private audio: HTMLAudioElement;
 
@@ -8,7 +8,7 @@ export class AudioPlayer {
         this.audio = new Audio();
     }
 
-    @Notify()
+    @Distributed()
     play(src: string, volume: number) {
         this.audio.src = src;
         this.audio.volume = volume;

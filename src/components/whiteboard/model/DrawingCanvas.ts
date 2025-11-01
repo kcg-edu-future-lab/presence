@@ -1,4 +1,4 @@
-import { GetState, SetState, Share, ShareClass } from "madoi-client";
+import { ChangeState, ClassName, Distributed, GetState, SetState } from "madoi-client";
 
 interface Line{
     type: "line";
@@ -11,7 +11,7 @@ interface Clear{
 }
 type Drawing = Line | Clear;
 
-@ShareClass({className: "DrawingCanvas"})
+@ClassName("DrawingCanvas")
 export class DrawingCanvas{
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D | null = null;
@@ -105,7 +105,8 @@ export class DrawingCanvas{
         this.canvas = c;
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     draw(prevX: number, prevY: number, x: number, y: number, size: number, color: string) {
         this.pendingDrawings.push({
             type: "line",
@@ -116,13 +117,14 @@ export class DrawingCanvas{
         this.processPendingDrawings();
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     clear(){
         this.pendingDrawings.push({type: "clear"});
         this.processPendingDrawings();
     }
   
-    @GetState({maxInterval: 10000, maxUpdates: 100})
+    @GetState({maxInterval: 10000})
     getState(): string {
         return this.canvas?.toDataURL("image/png") || "";
     }

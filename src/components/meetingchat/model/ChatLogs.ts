@@ -1,4 +1,4 @@
-import { EnterRoomAllowed, EnterRoomAllowedDetail, GetState, Madoi, PeerProfileUpdated, PeerProfileUpdatedDetail, SetState, Share, ShareClass } from "madoi-client";
+import { ChangeState, ClassName, Distributed, EnterRoomAllowed, EnterRoomAllowedDetail, GetState, Madoi, PeerProfileUpdated, PeerProfileUpdatedDetail, SetState } from "madoi-client";
 import { TypedCustomEventTarget } from "tcet";
 
 const ignoreWords = new Set<string>(["そう"]);
@@ -15,7 +15,7 @@ export interface Log{
 export interface LogAddedDetail{
     sentence: string;
 }
-@ShareClass({className: "ChatLogs"})
+@ClassName("ChatLogs")
 export class ChatLogs extends TypedCustomEventTarget<ChatLogs, {
     logAdded: LogAddedDetail
 }>{
@@ -54,7 +54,8 @@ export class ChatLogs extends TypedCustomEventTarget<ChatLogs, {
         this.addLog(selfName, language, message);
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     private addLog(senderName: string, language: string, sentence: string){
         this.logs = [...this.logs, {senderName, language, sentence}];
         this.dispatchCustomEvent("logAdded", {sentence});

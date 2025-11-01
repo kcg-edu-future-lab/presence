@@ -1,19 +1,21 @@
-import { GetState, SetState, Share, ShareClass } from "madoi-client";
+import { ChangeState, ClassName, Distributed, GetState, SetState } from "madoi-client";
 import { TagModel } from "./TagModel";
 
-@ShareClass({className: "TagBoardModel"})
+@ClassName("TagBoardModel")
 export class TagBoardModel{
     get tags(){
         return this._tags;
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     createTag(label: string, color: string){
         const tag: TagModel = {index: this.index++, label, position: [100, 100], color};
         this._tags.push(tag);
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     moveTag(tagIndex: number, dx: number, dy: number){
         this._tags.filter(t=>t.index === tagIndex)
             .forEach(t=>{
@@ -22,19 +24,22 @@ export class TagBoardModel{
             });
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     changeTagLabel(tagIndex: number, label: string){
         this._tags.filter(t=>t.index === tagIndex)
             .forEach(t=>t.label = label);
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     changeTagColor(tagIndex: number, color: string){
         this._tags.filter(t=>t.index === tagIndex)
             .forEach(t=>t.color = color);
     }
 
-    @Share()
+    @Distributed()
+    @ChangeState()
     removeTag(tagIndex: number){
         this._tags = this._tags.filter((t)=>t.index !== tagIndex);
     }
